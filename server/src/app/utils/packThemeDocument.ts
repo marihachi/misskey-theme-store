@@ -5,6 +5,6 @@ export default function packThemeDocument(themeDoc: IDocument) {
 		themeId: themeDoc._id.toHexString(),
 		name: themeDoc.name,
 		description: themeDoc.description,
-		imageUrl: null // TODO
+		imageUrl: themeDoc.imageUrl ? themeDoc.imageUrl : null
 	}
 }
