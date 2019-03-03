@@ -4,27 +4,8 @@ import ServerContext from '../core/ServerContext';
 import buildHash from '../core/buildHash';
 import IDocument from '../core/IDocument';
 import log from '../core/log';
-
-function packThemeDocument(themeDoc: IDocument) {
-	return {
-		themeId: themeDoc._id.toHexString(),
-		name: themeDoc.name,
-		description: themeDoc.description,
-		imageUrl: null // TODO
-	}
-}
-
-async function packUserDocument(userDoc: IDocument, serverContext: ServerContext) {
-	const themeDocs: IDocument[] = await serverContext.db.findArray('themes', {
-		userId: userDoc._id
-	});
-	const packedThemes = themeDocs.map(themeDoc => packThemeDocument(themeDoc));
-
-	return {
-		userId: userDoc._id.toHexString(),
-		themes: packedThemes
-	};
-}
+import packUserDocument from './utils/packUserDocument';
+import packThemeDocument from './utils/packThemeDocument';
 
 export default function mainRouter(serverContext: ServerContext): Router {
 	const { db } = serverContext;
