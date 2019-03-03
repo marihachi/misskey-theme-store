@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "name": "misskey-theme-store",
+  "version": "0.1.0",
+  "description": "The theme store of the Misskey",
+  "main": "built/index.js",
+  "scripts": {
+    "build": "npm run build.server && npm run build.front",
+    "build.server": "tsc -p ./server",
+    "build.front": "npm run build.front.webpack && npm run build.front.pages",
+    "build.front.webpack": "webpack --config \"frontend/webpack.config.js\"",
+    "build.front.pages": "pug ./frontend/src/pages -o ./built/frontend --pretty",
+    "start-instant": "node ./server/built"
+  },
+  "author": "marihachi",
+  "contributors": [],
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^4.16.1",
+    "@types/node": "^10.12.18",
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "cafy": "^12.0.0",
+    "express": "^4.16.4",
+    "vue": "2.5.x",
+    "vue-class-component": "6.3.x",
+    "vue-property-decorator": "7.3.x"
+  },
+  "devDependencies": {
+    "cpx": "^1.5.0",
+    "css-loader": "2.1.x",
+    "node-sass": "4.11.x",
+    "pug": "^2.0.3",
+    "pug-cli": "^1.0.0-alpha6",
+    "sass-loader": "7.1.x",
+    "ts-loader": "5.3.x",
+    "typescript": "^3.2.2",
+    "vue-loader": "15.6.x",
+    "vue-style-loader": "4.1.x",
+    "vue-template-compiler": "2.5.x",
+    "webpack": "4.29.x",
+    "webpack-cli": "3.2.x"
+  }
+}
