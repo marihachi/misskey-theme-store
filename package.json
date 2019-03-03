@@ -10,7 +10,7 @@
     "build.front": "npm run build.front.webpack && npm run build.front.pages",
     "build.front.webpack": "webpack --config \"frontend/webpack.config.js\"",
     "build.front.pages": "pug ./frontend/src/pages -o ./built/frontend --pretty",
-    "start-instant": "node ./server/built"
+    "start": "node ./server/built"
   },
   "author": "marihachi",
   "contributors": [],

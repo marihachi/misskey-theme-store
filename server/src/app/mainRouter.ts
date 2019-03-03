@@ -1,12 +1,14 @@
+import { promises as fs } from 'fs';
+import path from 'path';
 import { Router } from 'express';
 import randomString from 'crypto-random-string';
+import JSON5 from 'json5';
 import ServerContext from '../core/ServerContext';
 import buildHash from '../core/buildHash';
 import IDocument from '../core/IDocument';
 import log from '../core/log';
 import packUserDocument from './utils/packUserDocument';
 import packThemeDocument from './utils/packThemeDocument';
-import JSON5 from 'json5';
 
 export default function mainRouter(serverContext: ServerContext): Router {
 	const { db } = serverContext;
@@ -169,24 +171,48 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
-		// TODO: save image file to storage
-
-		// TODO: set file url
-		const imageUrl = ''; 
-
 		let themeDoc: IDocument | undefined = await db.findById('themes', themeId);
 		if (!themeDoc || themeDoc.state == 'deleted') {
 			res.json({ error: { reason: 'theme_not_found' } });
 			return;
 		}
 
+		// try to make dir
+		try {
+			await fs.mkdir(path.resolve(process.cwd(), 'themeImages'));
+		}
+		catch { }
+
+		// try to name an image file
+		let fileName: string = `${randomString(16)}.png`;
+		let fileNameTrying: number = 1;
+		while (fileNameTrying <= 3) {
+			try {
+				const filePath: string = path.resolve(process.cwd(), 'themeImages', fileName);
+				await fs.writeFile(filePath, buf, { flag: 'wx' });
+				break;
+			}
+			catch (err) {
+				console.error(err);
+				fileName = `${randomString(16)}.png`;
+				fileNameTrying ++;
+			}
+		}
+		if (fileNameTrying > 3) {
+			log('failed to write file');
+			res.json({ error: { reason: 'server_error' } });
+			return;
+		}
+
+		const imageUrl = `/theme/image/${fileName}`;
+
 		const updatedDoc: IDocument = await db.updateById('themes', themeId, {
 			imageUrl: imageUrl,
 		});
 
 		res.json({
-			resultType: 'empty',
-			result: { }
+			resultType: 'theme',
+			result: packThemeDocument(updatedDoc)
 		});
 	});
 
