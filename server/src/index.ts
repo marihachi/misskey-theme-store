@@ -1,11 +1,10 @@
 import path from 'path';
 import Express from 'express';
 //import passport from 'passport';
-import mainRouter from './mainRouter';
-
-const log = (...params: any[]) => {
-	console.log('[Server]', ...params);
-};
+import mainRouter from './app/mainRouter';
+import ServerContext from './core/ServerContext';
+import MongoProvider from './core/MongoProvider';
+import log from './core/log';
 
 async function entryPoint() {
 
@@ -17,6 +16,16 @@ async function entryPoint() {
 	if (process.env.PORT) {
 		httpPort = parseInt(process.env.PORT);
 	}
+
+	// * database
+
+	const db = await MongoProvider.connect('', ''); // TODO
+
+	// * server context
+
+	const serverContext: ServerContext = {
+		db: db
+	};
 
 	// * setup http server
 
@@ -32,7 +41,7 @@ async function entryPoint() {
 		res.send('misskey theme store is developing now ;) comming soon ...');
 	});
 
-	app.use(mainRouter());
+	app.use(mainRouter(serverContext));
 
 	log('initialized.');
 
