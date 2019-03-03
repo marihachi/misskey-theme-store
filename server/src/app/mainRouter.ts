@@ -6,6 +6,7 @@ import IDocument from '../core/IDocument';
 import log from '../core/log';
 import packUserDocument from './utils/packUserDocument';
 import packThemeDocument from './utils/packThemeDocument';
+import JSON5 from 'json5';
 
 export default function mainRouter(serverContext: ServerContext): Router {
 	const { db } = serverContext;
@@ -14,8 +15,8 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 	// sign up
 	router.post('/signup', async (req, res) => {
-		const username = req.body.username;
-		const password = req.body.password;
+		const username: string = req.body.username;
+		const password: string = req.body.password;
 
 		if (await db.find('user', { username: username })) {
 			res.json({ error: { reason: 'already_in_use'} });
@@ -32,7 +33,8 @@ export default function mainRouter(serverContext: ServerContext): Router {
 				algorithm: algorithm,
 				salt: salt,
 				hash: hash
-			}
+			},
+			state: 'normal'
 		});
 
 		// TODO: set session
@@ -45,11 +47,12 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 	// sign in
 	router.post('/signin', async (req, res) => {
-		const username = req.body.username;
-		const password = req.body.password;
+		const username: string = req.body.username;
+		const password: string = req.body.password;
 
 		const userDoc: IDocument | undefined = await db.find('users', {
-			username: username
+			username: username,
+			state: { $ne: 'deleted' }
 		});
 
 		if (!userDoc) {
@@ -80,10 +83,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 	// resolve username to userId
 	router.post('/user/resolve', async (req, res) => {
-		const username = req.body.username;
+		const username: string = req.body.username;
 
 		const userDoc: IDocument | undefined = await db.find('users', {
-			username: username
+			username: username,
+			state: { $ne: 'deleted' }
 		});
 
 		if (!userDoc) {
@@ -97,12 +101,12 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		});
 	});
 
-	// get user data by userId
-	router.post('/user', async (req, res) => {
-		const userId = req.body.userId;
+	// get user info by userId
+	router.post('/user/get', async (req, res) => {
+		const userId: string = req.body.userId;
 		
 		const userDoc: IDocument | undefined = await db.findById('users', userId);
-		if (!userDoc) {
+		if (!userDoc || userDoc.state == 'deleted') {
 			res.json({ error: { reason: 'user_not_found' } });
 			return;
 		}
@@ -113,12 +117,85 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		});
 	});
 
-	// get theme data by themeId
-	router.post('/theme', async (req, res) => {
-		const themeId = req.body.themeId;
+	// register a theme from theme data
+	router.post('/theme/register', async (req, res) => {
+		const themeData: string = req.body.themeData;
+
+		let parsedThemeData;
+		try {
+			parsedThemeData = JSON5.parse(themeData);
+		}
+		catch (err) {
+			res.json({ error: { reason: 'invalid_theme_data' } });
+			return;
+		}
+
+		const themeDoc: IDocument = await db.create('themes', {
+			name: parsedThemeData.name,
+			description: parsedThemeData.description,
+			imageUrl: null,
+			state: 'normal'
+		});
+
+		res.json({
+			resultType: 'theme',
+			result: packThemeDocument(themeDoc)
+		});
+	});
+
+	// register a theme from theme data
+	router.post('/theme/image/register', async (req, res) => {
+		const themeId: string = req.body.themeId;
+		const imageData: string = req.body.imageData;
+
+		// base64 size over
+		if (imageData.length > 1.5 * 1024 * 1024) {
+			res.json({ error: { reason: 'data_size_over' } });
+			return;
+		}
+
+		let buf: Buffer;
+		try {
+			buf = Buffer.from(imageData, 'base64');
+		}
+		catch (err) {
+			res.json({ error: { reason: 'invalid_image_data' } });
+			return;
+		}
+
+		// buffer size over
+		if (buf.byteLength > 1.0 * 1024 * 1024) {
+			res.json({ error: { reason: 'data_size_over' } });
+			return;
+		}
+
+		// TODO: save image file to storage
+
+		// TODO: set file url
+		const imageUrl = ''; 
+
+		let themeDoc: IDocument | undefined = await db.findById('themes', themeId);
+		if (!themeDoc || themeDoc.state == 'deleted') {
+			res.json({ error: { reason: 'theme_not_found' } });
+			return;
+		}
+
+		const updatedDoc: IDocument = await db.updateById('themes', themeId, {
+			imageUrl: imageUrl,
+		});
+
+		res.json({
+			resultType: 'empty',
+			result: { }
+		});
+	});
+
+	// get a theme info by themeId
+	router.post('/theme/get', async (req, res) => {
+		const themeId: string = req.body.themeId;
 
 		const themeDoc: IDocument | undefined = await db.findById('themes', themeId);
-		if (!themeDoc) {
+		if (!themeDoc || themeDoc.state == 'deleted') {
 			res.json({ error: { reason: 'theme_not_found' } });
 			return;
 		}
@@ -129,18 +206,68 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		});
 	});
 
-	// list theme data in store
+	// list theme infos in store
 	router.post('/theme/list', async (req, res) => {
+		const cursor: string | undefined = req.body.cursor;
 
 		// TODO: cursor
 
-		const themeDocs: IDocument[] = await serverContext.db.findArray('themes', { });
+		const themeDocs: IDocument[] = await serverContext.db.findArray('themes', {
+			state: { $ne: 'deleted' }
+		});
 
 		const packedThemes = themeDocs.map(themeDoc => packThemeDocument(themeDoc));
 
 		res.json({
 			resultType: 'themes',
 			result: packedThemes
+		});
+	});
+
+	// update a theme info by themeId
+	router.post('/theme/update', async (req, res) => {
+		const themeId: string = req.body.themeId;
+		const description: string | undefined = req.body.description;
+
+		if (!description) {
+			res.json({ error: { reason: 'not_updated' } });
+			return;
+		}
+
+		let themeDoc: IDocument | undefined = await db.findById('themes', themeId);
+		if (!themeDoc || themeDoc.state == 'deleted') {
+			res.json({ error: { reason: 'theme_not_found' } });
+			return;
+		}
+
+		const updateQuery: { [x: string]: any } = {};
+		if (description) {
+			updateQuery.description = description;
+		}
+
+		themeDoc = (await db.updateById('themes', themeId, updateQuery)) as IDocument;
+
+		res.json({
+			resultType: 'theme',
+			result: packThemeDocument(themeDoc)
+		});
+	});
+
+	// remove a theme info by themeId
+	router.post('/theme/delete', async (req, res) => {
+		const themeId: string = req.body.themeId;
+
+		const themeDoc: IDocument | undefined = await db.findById('themes', themeId);
+		if (!themeDoc || themeDoc.state == 'deleted') {
+			res.json({ error: { reason: 'theme_not_found' } });
+			return;
+		}
+
+		await db.updateById('themes', themeId, { state: 'deleted' });
+
+		res.json({
+			resultType: 'empty',
+			result: { }
 		});
 	});
 
