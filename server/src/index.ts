@@ -3,7 +3,7 @@ import start from './app/start';
 import init from './app/init';
 
 async function entryPoint() {
-/*
+
 	// option args
 	argv.option({
 		name: 'init',
@@ -16,7 +16,7 @@ async function entryPoint() {
 		await init();
 		return;
 	}
-*/
+
 	await start();
 }
 entryPoint()
