@@ -9,11 +9,17 @@ import IServerConfig from './interfaces/IServerConfig';
 
 export default async function init() {
 
+	// try to make dir
+	try {
+		await fs.mkdir(path.resolve(process.cwd(), `./.configs`));
+	}
+	catch { }
+
 	const configPath = path.resolve(process.cwd(), `./.configs/mtsConfig.json5`);
 
 	let isFileExisting;
 	try {
-		fs.access(configPath);
+		await fs.access(configPath);
 		isFileExisting = true;
 	}
 	catch (err) {

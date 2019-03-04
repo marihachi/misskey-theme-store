@@ -3,14 +3,15 @@
   "name": "misskey-theme-store",
   "version": "0.1.0",
   "description": "The theme store of the Misskey",
-  "main": "built/index.js",
+  "main": "./server/built/index.js",
   "scripts": {
     "build": "npm run build.server && npm run build.front",
     "build.server": "tsc -p ./server",
     "build.front": "npm run build.front.webpack && npm run build.front.pages",
     "build.front.webpack": "webpack --config \"frontend/webpack.config.js\"",
     "build.front.pages": "pug ./frontend/src/pages -o ./built/frontend --pretty",
-    "start": "node ./server/built"
+    "start": "node ./",
+    "init": "node ./ --init"
   },
   "author": "marihachi",
   "contributors": [],

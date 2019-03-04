@@ -2,3 +2,4 @@ node_modules
 built
 package-lock.json
 themeImages
+.configs
