@@ -9,6 +9,7 @@ import IDocument from '../core/IDocument';
 import log from '../core/log';
 import packUserDocument from './utils/packUserDocument';
 import packThemeDocument from './utils/packThemeDocument';
+import { setSession, clearSession } from './utils/session';
 
 export default function mainRouter(serverContext: ServerContext): Router {
 	const { db } = serverContext;
@@ -39,7 +40,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			state: 'normal'
 		});
 
-		// TODO: set session
+		await setSession(req, userDoc);
 
 		res.json({
 			resultType: 'userId',
@@ -75,11 +76,19 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
-		// TODO: set session
+		await setSession(req, userDoc);
 
 		res.json({
 			resultType: 'userId',
 			result: userDoc._id.toHexString()
+		});
+	});
+
+	router.post('/signout', async (req, res) => {
+		clearSession(req);
+		res.json({
+			resultType: 'empty',
+			result: {}
 		});
 	});
 
