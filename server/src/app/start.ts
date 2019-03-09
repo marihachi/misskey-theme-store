@@ -2,14 +2,10 @@ import path from 'path';
 import $ from 'cafy';
 import Express from 'express';
 import bodyParser from 'body-parser';
-import session from 'express-session';
-import mongoStore from 'connect-mongo';
-import passport from 'passport';
 import JSON5 from 'json5';
 import ServerContext from '../core/ServerContext';
 import MongoProvider from '../core/MongoProvider';
 import log from '../core/log';
-import IDocument from '../core/IDocument';
 import mainRouter from './mainRouter';
 import IServerConfig from './IServerConfig';
 import loadConfig from './utils/loadConfig';
@@ -48,8 +44,7 @@ export default async function start() {
 	const serverConfigVerification = $.obj({
 		httpPort: $.number,
 		dbUrl: $.string,
-		dbName: $.string,
-		httpSessionSecret: $.string
+		dbName: $.string
 	});
 	if (serverConfigVerification.nok(serverConfig)) {
 		throw new Error('invalid config');
@@ -73,37 +68,6 @@ export default async function start() {
 	app.set('view engine', 'pug');
 	app.use(Express.static(path.resolve(__dirname, './frontend'), { etag: false }));
 	app.use(bodyParser.json());
-	const MongoStore = mongoStore(session);
-	app.use(session({
-		store: new MongoStore({ db: mongoDb.db }),
-		secret: serverConfig.httpSessionSecret,
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			httpOnly: true,
-			maxAge: 7 * 24 * 60 * 60 * 1000 // 7days
-		}
-	}));
-	app.use(passport.initialize());
-	app.use(passport.session());
-
-	// * setup passport
-
-	passport.serializeUser<IDocument, string>((user, done) => {
-		done(null, user._id.toHexString());
-	});
-	passport.deserializeUser<IDocument, string>((id, done) => {
-		async function findUser(): Promise<IDocument> {
-			const userDoc: IDocument | undefined = await mongoDb.findById('users', id);
-			if (!userDoc || userDoc.state == 'deleted') {
-				throw new Error();
-			}
-			return userDoc;
-		}
-		findUser()
-		.then(user => done(null, user))
-		.catch(err => done(err));
-	});
 
 	// * routings
 

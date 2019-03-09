@@ -49,7 +49,6 @@ export default async function init() {
 
 	const serverConfig: IServerConfig = {
 		httpPort: httpPort,
-		httpSessionSecret: randomString(32),
 		dbName: dbName,
 		dbUrl: dbUrl
 	}

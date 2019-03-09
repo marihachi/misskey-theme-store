@@ -1,15 +1,27 @@
-import { Request } from 'express';
-import IDocument from '../../core/IDocument';
+import $ from 'cafy';
+import { Request, Response, NextFunction } from 'express';
+import ServerContext from '../../core/ServerContext';
 
-export function setSession(req: Request, user: IDocument): Promise<void> {
-	return new Promise<void>((resolve, reject) => {
-		req.login(user, (err) => {
-			if (err) reject(err);
-			resolve();
-		});
-	});
-}
+export function authentication(serverContext: ServerContext) {
+	const { db } = serverContext;
 
-export function clearSession(req: Request): void {
-	req.logout();
+	function authenticate(req: Request, res: Response, next: NextFunction) {
+		(async () => {
+			const [token, tokenErr] = $.string.get(req.body.token);
+			if (tokenErr) {
+				res.status(400).json({ error: { reason: 'need_login' } });
+				return;
+			}
+			const user = await db.find('users', { token: token, state: { $ne: 'deleted' } });
+			if (!user) {
+				res.status(400).json({ error: { reason: 'need_login' } });
+				return;
+			}
+			req.user = user;
+			next();
+		})()
+		.catch(err => next(err))
+	}
+
+	return authenticate;
 }

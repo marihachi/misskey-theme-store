@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import $ from 'cafy';
 import { Router } from 'express';
 import randomString from 'crypto-random-string';
 import JSON5 from 'json5';
@@ -9,26 +10,57 @@ import IDocument from '../core/IDocument';
 import log from '../core/log';
 import packUserDocument from './utils/packUserDocument';
 import packThemeDocument from './utils/packThemeDocument';
-import { setSession, clearSession } from './utils/session';
+import { authentication } from './utils/session';
 
 export default function mainRouter(serverContext: ServerContext): Router {
 	const { db } = serverContext;
 
+	const authenticate = authentication(serverContext);
 	const router = Router();
 
 	// sign up
 	router.post('/signup', async (req, res) => {
-		const username: string = req.body.username;
-		const password: string = req.body.password;
 
-		if (await db.find('user', { username: username })) {
-			res.json({ error: { reason: 'already_in_use'} });
+		// param: username
+		const [username, usernameErr] = $.string.get(req.body.username);
+		if (usernameErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
 			return;
 		}
+
+		// param: password
+		const [password, passwordErr] = $.string.get(req.body.password);
+		if (passwordErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
+
+		if ((await db.count('user', { username: username })) != 0) {
+			res.status(400).json({ error: { reason: 'already_in_use'} });
+			return;
+		}
+
+		// TODO: delete the user of 'deleted' state
 
 		const algorithm = 'sha256';
 		const salt = randomString(16);
 		const hash = buildHash(`${password}.${salt}`, algorithm);
+
+		// token
+		let tryCount = 1;
+		let token = randomString(64);
+		while (1) {
+			if ((await db.count('users', { token: token })) == 0) {
+				break;
+			}
+			token = randomString(64);
+			tryCount++;
+			if (tryCount > 10) {
+				log('failed to generate token');
+				res.status(500).json({ error: { reason: 'server_error' } });
+				return;
+			}
+		}
 
 		const userDoc: IDocument = await db.create('users', {
 			username: username,
@@ -37,21 +69,35 @@ export default function mainRouter(serverContext: ServerContext): Router {
 				salt: salt,
 				hash: hash
 			},
+			token: token,
 			state: 'normal'
 		});
 
-		await setSession(req, userDoc);
-
 		res.json({
-			resultType: 'userId',
-			result: userDoc._id.toHexString()
+			resultType: 'session',
+			result: {
+				userId: userDoc._id.toHexString(),
+				token: token
+			}
 		});
 	});
 
 	// sign in
 	router.post('/signin', async (req, res) => {
-		const username: string = req.body.username;
-		const password: string = req.body.password;
+
+		// param: username
+		const [username, usernameErr] = $.string.get(req.body.username);
+		if (usernameErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
+
+		// param: password
+		const [password, passwordErr] = $.string.get(req.body.password);
+		if (passwordErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
 
 		const userDoc: IDocument | undefined = await db.find('users', {
 			username: username,
@@ -59,42 +105,41 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		});
 
 		if (!userDoc) {
-			res.json({ error: { reason: 'incorrect_credentials' } });
+			res.status(400).json({ error: { reason: 'incorrect_credentials' } });
 			return;
 		}
 
 		if (userDoc.password.algorithm == 'sha256') {
 			const correctHash = buildHash(`${password}.${userDoc.password.salt}`, 'sha256');
 			if (userDoc.password.hash != correctHash) {
-				res.json({ error: { reason: 'incorrect_credentials' } });
+				res.status(400).json({ error: { reason: 'incorrect_credentials' } });
 				return;
 			}
 		}
 		else {
 			log('unknown hash algorithm:', userDoc.password.algorithm);
-			res.json({ error: { reason: 'server_error' } });
+			res.status(500).json({ error: { reason: 'server_error' } });
 			return;
 		}
 
-		await setSession(req, userDoc);
-
 		res.json({
-			resultType: 'userId',
-			result: userDoc._id.toHexString()
-		});
-	});
-
-	router.post('/signout', async (req, res) => {
-		clearSession(req);
-		res.json({
-			resultType: 'empty',
-			result: {}
+			resultType: 'session',
+			result: {
+				userId: userDoc._id.toHexString(),
+				token: userDoc.token
+			}
 		});
 	});
 
 	// resolve username to userId
 	router.post('/user/resolve', async (req, res) => {
-		const username: string = req.body.username;
+
+		// param: username
+		const [username, usernameErr] = $.string.get(req.body.username);
+		if (usernameErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
 
 		const userDoc: IDocument | undefined = await db.find('users', {
 			username: username,
@@ -102,7 +147,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		});
 
 		if (!userDoc) {
-			res.json({ error: { reason: 'user_not_found' } });
+			res.status(400).json({ error: { reason: 'user_not_found' } });
 			return;
 		}
 
@@ -114,11 +159,17 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 	// get user info by userId
 	router.post('/user/get', async (req, res) => {
-		const userId: string = req.body.userId;
-		
+
+		// param: userId
+		const [userId, userIdErr] = $.string.get(req.body.userId);
+		if (userIdErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
+
 		const userDoc: IDocument | undefined = await db.findById('users', userId);
 		if (!userDoc || userDoc.state == 'deleted') {
-			res.json({ error: { reason: 'user_not_found' } });
+			res.status(400).json({ error: { reason: 'user_not_found' } });
 			return;
 		}
 
@@ -129,15 +180,21 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	});
 
 	// register a theme from theme data
-	router.post('/theme/register', async (req, res) => {
-		const themeData: string = req.body.themeData;
+	router.post('/theme/register', authenticate, async (req, res) => {
+
+		// param: themeData
+		const [themeData, themeDataErr] = $.string.get(req.body.themeData);
+		if (themeDataErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
 
 		let parsedThemeData;
 		try {
 			parsedThemeData = JSON5.parse(themeData);
 		}
 		catch (err) {
-			res.json({ error: { reason: 'invalid_theme_data' } });
+			res.status(400).json({ error: { reason: 'invalid_theme_data' } });
 			return;
 		}
 
@@ -155,13 +212,25 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	});
 
 	// register a theme from theme data
-	router.post('/theme/image/register', async (req, res) => {
-		const themeId: string = req.body.themeId;
-		const imageData: string = req.body.imageData;
+	router.post('/theme/image/register', authenticate, async (req, res) => {
+
+		// param: themeId
+		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		if (themeIdErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
+
+		// param: imageData
+		const [imageData, imageDataErr] = $.string.get(req.body.imageData);
+		if (imageDataErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
 
 		// base64 size over
 		if (imageData.length > 1.5 * 1024 * 1024) {
-			res.json({ error: { reason: 'data_size_over' } });
+			res.status(400).json({ error: { reason: 'data_size_over' } });
 			return;
 		}
 
@@ -170,19 +239,19 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			buf = Buffer.from(imageData, 'base64');
 		}
 		catch (err) {
-			res.json({ error: { reason: 'invalid_image_data' } });
+			res.status(400).json({ error: { reason: 'invalid_image_data' } });
 			return;
 		}
 
 		// buffer size over
 		if (buf.byteLength > 1.0 * 1024 * 1024) {
-			res.json({ error: { reason: 'data_size_over' } });
+			res.status(400).json({ error: { reason: 'data_size_over' } });
 			return;
 		}
 
 		let themeDoc: IDocument | undefined = await db.findById('themes', themeId);
 		if (!themeDoc || themeDoc.state == 'deleted') {
-			res.json({ error: { reason: 'theme_not_found' } });
+			res.status(400).json({ error: { reason: 'theme_not_found' } });
 			return;
 		}
 
@@ -209,7 +278,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		}
 		if (fileNameTrying > 3) {
 			log('failed to write file');
-			res.json({ error: { reason: 'server_error' } });
+			res.status(500).json({ error: { reason: 'server_error' } });
 			return;
 		}
 
@@ -227,11 +296,17 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 	// get a theme info by themeId
 	router.post('/theme/get', async (req, res) => {
-		const themeId: string = req.body.themeId;
+
+		// param: themeId
+		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		if (themeIdErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
 
 		const themeDoc: IDocument | undefined = await db.findById('themes', themeId);
 		if (!themeDoc || themeDoc.state == 'deleted') {
-			res.json({ error: { reason: 'theme_not_found' } });
+			res.status(400).json({ error: { reason: 'theme_not_found' } });
 			return;
 		}
 
@@ -260,18 +335,30 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	});
 
 	// update a theme info by themeId
-	router.post('/theme/update', async (req, res) => {
-		const themeId: string = req.body.themeId;
-		const description: string | undefined = req.body.description;
+	router.post('/theme/update', authenticate, async (req, res) => {
+
+		// param: themeId
+		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		if (themeIdErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
+
+		// param: description
+		const [description, descriptionErr] = $.string.optional.nullable.get(req.body.description) as [string | undefined, Error];
+		if (descriptionErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
 
 		if (!description) {
-			res.json({ error: { reason: 'not_updated' } });
+			res.status(400).json({ error: { reason: 'not_updated' } });
 			return;
 		}
 
 		let themeDoc: IDocument | undefined = await db.findById('themes', themeId);
 		if (!themeDoc || themeDoc.state == 'deleted') {
-			res.json({ error: { reason: 'theme_not_found' } });
+			res.status(400).json({ error: { reason: 'theme_not_found' } });
 			return;
 		}
 
@@ -289,12 +376,18 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	});
 
 	// remove a theme info by themeId
-	router.post('/theme/delete', async (req, res) => {
-		const themeId: string = req.body.themeId;
+	router.post('/theme/delete', authenticate, async (req, res) => {
+
+		// param: themeId
+		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		if (themeIdErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
 
 		const themeDoc: IDocument | undefined = await db.findById('themes', themeId);
 		if (!themeDoc || themeDoc.state == 'deleted') {
-			res.json({ error: { reason: 'theme_not_found' } });
+			res.status(400).json({ error: { reason: 'theme_not_found' } });
 			return;
 		}
 
