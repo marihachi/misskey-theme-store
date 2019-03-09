@@ -1,6 +1,6 @@
 import path from 'path';
 import $ from 'cafy';
-import Express from 'express';
+import Express, { Response, Request, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import JSON5 from 'json5';
 import ServerContext from '../core/ServerContext';
@@ -75,6 +75,21 @@ export default async function start() {
 		res.send('misskey theme store is developing now ;) comming soon ...');
 	});
 	app.use(mainRouter(serverContext));
+
+	// not found
+	app.use((req, res) => {
+		res.status(400).json({ error: { reason: 'endpoint_not_found' } });
+	});
+
+	// error handling
+	app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+		if (err instanceof SyntaxError) {
+			res.status(400).json({ error: { reason: 'invalid_json' } });
+			return;
+		}
+		log('http server error:', err);
+		res.status(500).json({ error: { reason: 'server_error' } });
+	});
 
 	// * start http server
 
