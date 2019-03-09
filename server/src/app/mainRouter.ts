@@ -35,7 +35,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
-		if ((await db.count('user', { username: username })) != 0) {
+		if ((await db.count('users', { username: username })) != 0) {
 			res.status(400).json({ error: { reason: 'already_in_use'} });
 			return;
 		}
