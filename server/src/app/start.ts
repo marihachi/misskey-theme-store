@@ -3,14 +3,16 @@ import $ from 'cafy';
 import Express from 'express';
 import bodyParser from 'body-parser';
 import session from 'express-session';
+import mongoStore from 'connect-mongo';
 import passport from 'passport';
 import JSON5 from 'json5';
-import mainRouter from './mainRouter';
 import ServerContext from '../core/ServerContext';
 import MongoProvider from '../core/MongoProvider';
 import log from '../core/log';
 import IDocument from '../core/IDocument';
-import IServerConfig from './interfaces/IServerConfig';
+import mainRouter from './mainRouter';
+import IServerConfig from './IServerConfig';
+import loadConfig from './utils/loadConfig';
 
 export default async function start() {
 
@@ -30,8 +32,8 @@ export default async function start() {
 		serverConfigSource = JSON5.parse(process.env.MTS_CONFIG);
 	}
 	else {
-		log(`loading config from mtsConfig.json ...`);
-		serverConfigSource = require(path.resolve(process.cwd(), `./.configs/mtsConfig.json5`));
+		log(`loading config from .configs/mtsConfig.json5 ...`);
+		serverConfigSource = await loadConfig(path.resolve(process.cwd(), `./.configs/mtsConfig.json5`));
 	}
 	serverConfigSource.httpPort = 3000;
 	if (process.env.PORT) {
@@ -46,7 +48,8 @@ export default async function start() {
 	const serverConfigVerification = $.obj({
 		httpPort: $.number,
 		dbUrl: $.string,
-		dbName: $.string
+		dbName: $.string,
+		httpSessionSecret: $.string
 	});
 	if (serverConfigVerification.nok(serverConfig)) {
 		throw new Error('invalid config');
@@ -55,12 +58,12 @@ export default async function start() {
 	// * database
 
 	log(`connecting database ...`);
-	const db = await MongoProvider.connect(serverConfig.dbUrl, serverConfig.dbName);
+	const mongoDb = await MongoProvider.connect(serverConfig.dbUrl, serverConfig.dbName);
 
 	// * server context
 
 	const serverContext: ServerContext = {
-		db: db
+		db: mongoDb
 	};
 
 	// * setup http server
@@ -70,8 +73,12 @@ export default async function start() {
 	app.set('view engine', 'pug');
 	app.use(Express.static(path.resolve(__dirname, './frontend'), { etag: false }));
 	app.use(bodyParser.json());
+	const MongoStore = mongoStore(session);
 	app.use(session({
+		store: new MongoStore({ db: mongoDb.db }),
 		secret: serverConfig.httpSessionSecret,
+		resave: false,
+		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
 			maxAge: 7 * 24 * 60 * 60 * 1000 // 7days
@@ -87,7 +94,7 @@ export default async function start() {
 	});
 	passport.deserializeUser<IDocument, string>((id, done) => {
 		async function findUser(): Promise<IDocument> {
-			const userDoc: IDocument | undefined = await db.findById('users', id);
+			const userDoc: IDocument | undefined = await mongoDb.findById('users', id);
 			if (!userDoc || userDoc.state == 'deleted') {
 				throw new Error();
 			}

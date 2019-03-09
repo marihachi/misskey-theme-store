@@ -21,7 +21,7 @@ export default class MongoProvider {
 
 	private client: MongoClient;
 
-	private db: Db;
+	db: Db;
 
 	async create(collectionName: string, data: { [x: string]: any }): Promise<any> {
 		const result = await this.db.collection(collectionName).insertOne(data);

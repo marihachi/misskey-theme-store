@@ -5,7 +5,7 @@ import randomString from 'crypto-random-string';
 import log from '../core/log';
 import question from '../core/question';
 import inputLine from '../core/inputLine';
-import IServerConfig from './interfaces/IServerConfig';
+import IServerConfig from './IServerConfig';
 
 export default async function init() {
 
