@@ -6,9 +6,9 @@ import JSON5 from 'json5';
 import ServerContext from '../core/ServerContext';
 import MongoProvider from '../core/MongoProvider';
 import log from '../core/log';
+import loadConfig from '../core/loadConfig';
 import mainRouter from './mainRouter';
 import IServerConfig from './IServerConfig';
-import loadConfig from './utils/loadConfig';
 
 export default async function start() {
 
