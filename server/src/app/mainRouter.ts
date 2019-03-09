@@ -199,6 +199,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		}
 
 		const themeDoc: IDocument = await db.create('themes', {
+			userId: req.user._id,
 			name: parsedThemeData.name,
 			description: parsedThemeData.description,
 			imageUrl: null,
@@ -207,7 +208,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(themeDoc)
+			result: packThemeDocument(themeDoc, serverContext)
 		});
 	});
 
@@ -290,7 +291,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(updatedDoc)
+			result: packThemeDocument(updatedDoc, serverContext)
 		});
 	});
 
@@ -312,7 +313,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(themeDoc)
+			result: packThemeDocument(themeDoc, serverContext)
 		});
 	});
 
@@ -326,7 +327,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			state: { $ne: 'deleted' }
 		});
 
-		const packedThemes = themeDocs.map(themeDoc => packThemeDocument(themeDoc));
+		const packedThemes = themeDocs.map(themeDoc => packThemeDocument(themeDoc, serverContext));
 
 		res.json({
 			resultType: 'themes',
@@ -371,7 +372,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(themeDoc)
+			result: packThemeDocument(themeDoc, serverContext)
 		});
 	});
 

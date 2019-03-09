@@ -6,10 +6,11 @@ export default async function packUserDocument(userDoc: IDocument, serverContext
 	const themeDocs: IDocument[] = await serverContext.db.findArray('themes', {
 		userId: userDoc._id
 	});
-	const packedThemes = themeDocs.map(themeDoc => packThemeDocument(themeDoc));
+	const packedThemes = themeDocs.map(themeDoc => packThemeDocument(themeDoc, serverContext));
 
 	return {
 		userId: userDoc._id.toHexString(),
+		username: userDoc.username,
 		themes: packedThemes
 	};
 }
