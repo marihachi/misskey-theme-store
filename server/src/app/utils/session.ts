@@ -1,6 +1,7 @@
 import $ from 'cafy';
 import { Request, Response, NextFunction } from 'express';
 import ServerContext from '../../core/ServerContext';
+import IDocument from '../../core/IDocument';
 
 export function authentication(serverContext: ServerContext) {
 	const { db } = serverContext;
@@ -12,7 +13,7 @@ export function authentication(serverContext: ServerContext) {
 				res.status(400).json({ error: { reason: 'need_login' } });
 				return;
 			}
-			const user = await db.find('users', { token: token, state: { $ne: 'deleted' } });
+			const user: IDocument | undefined = await db.find('users', { token: token, state: { $ne: 'deleted' } });
 			if (!user) {
 				res.status(400).json({ error: { reason: 'need_login' } });
 				return;

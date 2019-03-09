@@ -1,7 +1,6 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import JSON5 from 'json5';
-import randomString from 'crypto-random-string';
 import log from '../core/log';
 import question from '../core/question';
 import inputLine from '../core/inputLine';
