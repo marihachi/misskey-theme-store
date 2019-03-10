@@ -24,8 +24,8 @@ html {
 	font-size: 14px;
 }
 body {
-	background-color: hsl(0, 0%, 95%);
-	color: hsl(0, 0%, 20%);
+	background-color: hsl(11, 100%, 97%);
+	color: hsl(0, 44%, 57%);
 }
 </style>
 
@@ -33,10 +33,15 @@ body {
 .app {
 	ul {
 		list-style: none;
-		padding-left: 0;
+		background-color: hsl(22, 33%, 76%);
 
 		li {
 			display: inline-block;
+
+			a {
+				display: inline-block;
+				padding: 1rem 2rem;
+			}
 		}
 	}
 }

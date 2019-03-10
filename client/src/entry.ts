@@ -3,6 +3,8 @@ import VueRouter from 'vue-router';
 import routes from './routes';
 import App from './components/app.vue';
 
+import 'normalize.css';
+
 Vue.use(VueRouter);
 const router = new VueRouter({ routes: routes, mode: 'history' });
 

@@ -1,16 +1,22 @@
 <template>
 <div>
-	<signup />
-	<signin />
+	<p>ログイン</p>
+	<form>
+		<div>
+			<input type="text">
+		</div>
+		<div>
+			<input type="password">
+		</div>
+		<button>ログインする</button>
+	</form>
 </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import signup from '../signup.vue';
-import signin from '../signin.vue';
 
-@Component({ components: { signup, signin } })
+@Component({ components: { } })
 export default class extends Vue {
 
 }
