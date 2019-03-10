@@ -8,9 +8,8 @@ import ServerContext from '../core/ServerContext';
 import buildHash from '../core/buildHash';
 import IDocument from '../core/IDocument';
 import log from '../core/log';
-import packUserDocument from './utils/packUserDocument';
-import packThemeDocument from './utils/packThemeDocument';
 import { authentication } from './utils/session';
+import { packTheme, packUserWithThemes } from './utils/packDocument';
 
 export default function mainRouter(serverContext: ServerContext): Router {
 	const { db } = serverContext;
@@ -36,7 +35,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		}
 
 		if ((await db.count('users', { username: username })) != 0) {
-			res.status(400).json({ error: { reason: 'already_in_use'} });
+			res.status(400).json({ error: { reason: 'already_in_use' } });
 			return;
 		}
 
@@ -174,8 +173,8 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		}
 
 		res.json({
-			resultType: 'user',
-			result: await packUserDocument(userDoc, serverContext)
+			resultType: 'userWithThemes',
+			result: await packUserWithThemes(userDoc, serverContext)
 		});
 	});
 
@@ -208,7 +207,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(themeDoc, serverContext)
+			result: await packTheme(themeDoc, serverContext)
 		});
 	});
 
@@ -256,6 +255,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
+		if (!req.user._id.equals(themeDoc.userId)) {
+			res.status(400).json({ error: { reason: 'not_your_theme' } });
+			return;
+		}
+
 		// try to make dir
 		try {
 			await fs.mkdir(path.resolve(process.cwd(), 'themeImages'));
@@ -291,7 +295,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(updatedDoc, serverContext)
+			result: await packTheme(updatedDoc, serverContext)
 		});
 	});
 
@@ -313,7 +317,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(themeDoc, serverContext)
+			result: await packTheme(themeDoc, serverContext)
 		});
 	});
 
@@ -327,7 +331,8 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			state: { $ne: 'deleted' }
 		});
 
-		const packedThemes = themeDocs.map(themeDoc => packThemeDocument(themeDoc, serverContext));
+		const packedThemePromises = themeDocs.map(themeDoc => packTheme(themeDoc, serverContext));
+		const packedThemes = await Promise.all(packedThemePromises);
 
 		res.json({
 			resultType: 'themes',
@@ -363,6 +368,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
+		if (!req.user._id.equals(themeDoc.userId)) {
+			res.status(400).json({ error: { reason: 'not_your_theme' } });
+			return;
+		}
+
 		const updateQuery: { [x: string]: any } = {};
 		if (description) {
 			updateQuery.description = description;
@@ -372,7 +382,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		res.json({
 			resultType: 'theme',
-			result: packThemeDocument(themeDoc, serverContext)
+			result: await packTheme(themeDoc, serverContext)
 		});
 	});
 
@@ -389,6 +399,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		const themeDoc: IDocument | undefined = await db.findById('themes', themeId);
 		if (!themeDoc || themeDoc.state == 'deleted') {
 			res.status(400).json({ error: { reason: 'theme_not_found' } });
+			return;
+		}
+
+		if (!req.user._id.equals(themeDoc.userId)) {
+			res.status(400).json({ error: { reason: 'not_your_theme' } });
 			return;
 		}
 
