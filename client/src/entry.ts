@@ -1,19 +1,14 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Entrance from './components/entrance.vue';
-import User from './components/user.vue';
+import routes from './routes';
+import App from './components/app.vue';
 
 Vue.use(VueRouter);
-
-const router = new VueRouter({
-	routes: [
-		{ path: '/', component: Entrance },
-		{ path: '/user', component: User }
-	]
-});
+const router = new VueRouter({ routes: routes });
 
 const app = new Vue({
 	el: '#app',
 	router: router,
-	template: '<router-view></router-view>'
+	components: { App },
+	template: '<App></App>'
 });

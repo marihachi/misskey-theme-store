@@ -1,7 +1,7 @@
 <template>
 <div>
-	<p>entrance</p>
-	<router-link to="user">go user page</router-link>
+	<div>global navigation</div>
+	<router-view></router-view>
 </div>
 </template>
 
@@ -17,5 +17,11 @@ export default class extends Vue {
 </script>
 
 <style lang="scss">
-
+html {
+	font-size: 14px;
+}
+body {
+	background-color: hsl(0, 0%, 95%);
+	color: hsl(0, 0%, 20%);
+}
 </style>
