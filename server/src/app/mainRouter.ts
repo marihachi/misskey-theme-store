@@ -197,11 +197,39 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
+		// try to make dir
+		try {
+			await fs.mkdir(path.resolve(process.cwd(), 'themeFiles'));
+		}
+		catch { }
+
+		// try to name an theme file
+		let fileName: string = `${randomString(16)}.misskeytheme`;
+		let fileNameTrying: number = 1;
+		while (fileNameTrying <= 3) {
+			try {
+				const filePath: string = path.resolve(process.cwd(), 'themeFiles', fileName);
+				await fs.writeFile(filePath, themeData, { flag: 'wx' });
+				break;
+			}
+			catch (err) {
+				console.error(err);
+				fileName = `${randomString(16)}.png`;
+				fileNameTrying ++;
+			}
+		}
+		if (fileNameTrying > 3) {
+			log('failed to write file');
+			res.status(500).json({ error: { reason: 'server_error' } });
+			return;
+		}
+
 		const themeDoc: IDocument = await db.create('themes', {
 			userId: req.user._id,
 			name: parsedThemeData.name,
 			description: parsedThemeData.description,
-			imageUrl: null,
+			themeFileName: fileName,
+			imageFileName: null,
 			state: 'normal'
 		});
 
@@ -287,10 +315,8 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
-		const imageUrl = `/theme/image/${fileName}`;
-
 		const updatedDoc: IDocument = await db.updateById('themes', themeId, {
-			imageUrl: imageUrl,
+			imageFileName: fileName,
 		});
 
 		res.json({

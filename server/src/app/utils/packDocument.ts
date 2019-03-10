@@ -9,7 +9,8 @@ export async function packTheme(themeDoc: IDocument, serverContext: ServerContex
 		user: packUser(userDoc),
 		name: themeDoc.name,
 		description: themeDoc.description,
-		imageUrl: themeDoc.imageUrl ? themeDoc.imageUrl : null
+		themeFileName: themeDoc.themeFileName,
+		imageFileName: themeDoc.imageFileName
 	}
 }
 
