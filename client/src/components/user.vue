@@ -1,12 +1,11 @@
 <template>
-<p>router</p>
+<p>user</p>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-//import EntrancePage from './pages/entrance.vue';
 
 @Component({ components: { } })
 export default class extends Vue {
