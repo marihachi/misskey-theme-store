@@ -66,19 +66,22 @@ export default async function start() {
 	const app = Express();
 	app.set('views', './views');
 	app.set('view engine', 'pug');
-	app.use(Express.static(path.resolve(__dirname, './frontend'), { etag: false }));
 	app.use(bodyParser.json());
 
-	// * routings
+	// routings
 
-	app.get('/', (req, res) => {
-		res.send('misskey theme store is developing now ;) comming soon ...');
-	});
+	app.use('/', Express.static(path.resolve(__dirname, '../client/scripts'), { etag: false }));
+	app.use('/', Express.static(path.resolve(__dirname, '../client/pages'), { etag: false }));
+	app.use('/theme/file', Express.static(path.resolve(process.cwd(), 'themeFiles'), { etag: false }));
+	app.use('/theme/image', Express.static(path.resolve(process.cwd(), 'themeImages'), { etag: false }));
 	app.use(mainRouter(serverContext));
 
 	// not found
-	app.use((req, res) => {
+	app.post('*', (req, res) => {
 		res.status(400).json({ error: { reason: 'endpoint_not_found' } });
+	});
+	app.use((req, res) => {
+		res.status(400).send('page not found');
 	});
 
 	// error handling
