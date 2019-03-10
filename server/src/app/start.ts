@@ -64,7 +64,7 @@ export default async function start() {
 	// * setup http server
 
 	const app = Express();
-	app.set('views', './views');
+	app.set('views', path.resolve(__dirname, './views'));
 	app.set('view engine', 'pug');
 	app.use(bodyParser.json());
 
@@ -81,7 +81,7 @@ export default async function start() {
 		res.status(400).json({ error: { reason: 'endpoint_not_found' } });
 	});
 	app.use((req, res) => {
-		res.status(400).send('page not found');
+		res.render('main');
 	});
 
 	// error handling

@@ -1,17 +1,16 @@
 <template>
 <div>
-	<p>user</p>
+	<p>theme list</p>
 </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component({ components: { } })
 export default class extends Vue {
-
+	@Prop()
+	query!: string;
 }
 </script>
 

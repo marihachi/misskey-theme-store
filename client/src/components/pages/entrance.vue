@@ -1,14 +1,11 @@
 <template>
 <div>
 	<p>entrance</p>
-	<router-link to="user">go user page</router-link>
 </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-property-decorator';
 
 @Component({ components: { } })
 export default class extends Vue {
