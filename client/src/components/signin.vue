@@ -1,24 +1,42 @@
 <template>
 <div>
 	<p>ログイン</p>
-	<form>
+	<form @submit.prevent="signin()">
 		<div>
-			<input type="text">
+			<input type="text" v-model="username">
 		</div>
 		<div>
-			<input type="password">
+			<input type="password" v-model="password">
 		</div>
-		<button>ログインする</button>
+		<button type="submit">ログインする</button>
 	</form>
 </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import axios from 'axios';
 
 @Component({ components: { } })
 export default class extends Vue {
+	username: string = '';
+	password: string = '';
 
+	async signin() {
+		const result = await axios.post(`/signin`, {
+			username: this.username,
+			password: this.password
+		});
+
+		if (result.status != 200) {
+			console.error(result.data);
+			alert('ログインに失敗しました');
+			return;
+		}
+
+		localStorage.setItem('userId', result.data.result.userId);
+		localStorage.setItem('token', result.data.result.token);
+	}
 }
 </script>
 
