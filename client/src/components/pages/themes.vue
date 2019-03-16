@@ -1,16 +1,42 @@
 <template>
 <div>
 	<p>theme list</p>
+	<ul v-if="themes.length != 0">
+		<li v-for="theme in themes" :key="theme.themeId">
+			<p>{{theme.name}}</p>
+			<p>{{theme.description}}</p>
+			<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }">detail page</router-link>
+		</li>
+	</ul>
+	<div v-else>
+		<p>no themes</p>
+	</div>
 </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
+import axios from 'axios';
+
+type Theme = {
+	themeId: string,
+	user: any,
+	name: string,
+	description: string,
+	themeFileName: string,
+	imageFileName: string
+};
 
 @Component({ components: { } })
 export default class extends Vue {
-	@Prop()
-	query!: string;
+	themes: Theme[] = [];
+
+	@Prop() query!: string;
+
+	async created() {
+		const result = await axios.post('/theme/list', { });
+		this.themes = (result.data.result as Theme[]);
+	}
 }
 </script>
 

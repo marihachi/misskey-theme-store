@@ -16,9 +16,9 @@ export default () => {
 		routes: [
 			{ path: '/', component: Entrance },
 			{ path: '/theme', component: Themes, props: (route: any) => ({ query: route.query.q }) },
-			{ path: '/theme/:themeId', component: Theme },
+			{ path: '/theme/:themeId', name: 'themeDetail', component: Theme },
 			//{ path: '/user', component: Users, props: (route: any) => ({ query: route.query.q }) },
-			{ path: '/user/:username', component: User },
+			{ path: '/user/:username', name: 'userDetail', component: User },
 			{ path: '*', component: NotFound }
 		],
 		mode: 'history'

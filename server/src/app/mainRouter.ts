@@ -227,7 +227,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		const themeDoc: IDocument = await db.create('themes', {
 			userId: req.user._id,
 			name: parsedThemeData.name,
-			description: parsedThemeData.description,
+			description: parsedThemeData.desc,
 			themeFileName: fileName,
 			imageFileName: null,
 			state: 'normal'
