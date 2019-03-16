@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="signin">
 	<p>ログイン</p>
 	<form @submit.prevent="signin()">
 		<div>
@@ -41,6 +41,8 @@ export default class extends Vue {
 }
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+.signin {
+	margin: 1.5rem;
+}
 </style>
