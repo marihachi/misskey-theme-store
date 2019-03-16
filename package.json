@@ -49,6 +49,7 @@
     "vue-router": "3.0.x",
     "vue-style-loader": "4.1.x",
     "vue-template-compiler": "2.6.x",
+    "vuex": "3.1.x",
     "webpack": "4.29.x",
     "webpack-cli": "3.2.x"
   }

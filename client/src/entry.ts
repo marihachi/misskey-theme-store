@@ -1,16 +1,21 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
-import routes from './routes';
+import store from './store';
+import router from './router';
 import App from './components/app.vue';
 
 import 'normalize.css';
 
-Vue.use(VueRouter);
-const router = new VueRouter({ routes: routes, mode: 'history' });
-
 const app = new Vue({
 	el: '#app',
-	router: router,
+	router: router(),
+	store: store(),
 	components: { App },
 	template: '<App></App>'
 });
+
+const userId = localStorage.getItem('userId');
+const token = localStorage.getItem('token');
+
+if (userId && token) {
+	app.$store.commit('setSession', { userId: userId, token: token });
+}

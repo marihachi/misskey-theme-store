@@ -16,7 +16,7 @@ import signin from '../signin.vue';
 @Component({ components: { signup, signin } })
 export default class extends Vue {
 	get isLogin() {
-		return localStorage.getItem('userId') && localStorage.getItem('token');
+		return this.$store.getters.session;
 	}
 }
 </script>
