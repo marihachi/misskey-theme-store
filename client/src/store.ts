@@ -34,6 +34,13 @@ export default () => {
 				commit('clearSession');
 				localStorage.removeItem('userId');
 				localStorage.removeItem('token');
+			},
+			loadSession({ commit }) {
+				const userId = localStorage.getItem('userId');
+				const token = localStorage.getItem('token');
+				if (userId && token) {
+					commit('setSession', { userId: userId, token: token });
+				}
 			}
 		},
 		getters: {

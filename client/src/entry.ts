@@ -13,9 +13,4 @@ const app = new Vue({
 	template: '<App></App>'
 });
 
-const userId = localStorage.getItem('userId');
-const token = localStorage.getItem('token');
-
-if (userId && token) {
-	app.$store.commit('setSession', { userId: userId, token: token });
-}
+app.$store.dispatch('loadSession');
