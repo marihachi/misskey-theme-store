@@ -1,9 +1,18 @@
 <template>
 <div class="app">
-	<ul>
-		<li><router-link to="/">エントランス</router-link></li>
-		<li><router-link to="/theme">テーマ一覧</router-link></li>
-	</ul>
+	<div class="global-nav">
+		<div class="left">
+			<ul>
+				<li><router-link to="/">エントランス</router-link></li>
+				<li><router-link to="/theme">テーマ一覧</router-link></li>
+			</ul>
+		</div>
+		<div class="right">
+			<ul v-if="$store.getters.session != null">
+				<li><a @click="logout()">ログアウト</a></li>
+			</ul>
+		</div>
+	</div>
 	<div class="container">
 		<router-view></router-view>
 	</div>
@@ -15,7 +24,9 @@ import { Vue, Component } from 'vue-property-decorator';
 
 @Component({ components: { } })
 export default class extends Vue {
-
+	logout() {
+		this.$store.dispatch('clearSession');
+	}
 }
 </script>
 
@@ -31,17 +42,26 @@ body {
 
 <style lang="scss" scoped>
 .app {
-	ul {
-		list-style: none;
+	.global-nav {
+		display: flex;
 		background-color: hsl(22, 33%, 76%);
-
-		li {
-			display: inline-block;
-
-			a {
-				display: inline-block;
-				padding: 1rem 2rem;
+		.left, .right {
+			ul {
+				list-style: none;
+				padding-left: 0;
+				margin: 0;
+				li {
+					display: inline-block;
+					a {
+						display: inline-block;
+						padding: 1.2rem 2.4rem;
+						cursor: pointer;
+					}
+				}
 			}
+		}
+		.right {
+			margin-left: auto;
 		}
 	}
 }

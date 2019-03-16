@@ -22,8 +22,24 @@ export default () => {
 				state.session = null;
 			}
 		},
+		actions: {
+			setSession({ commit }, payload) {
+				const userId = payload.userId;
+				const token = payload.token;
+				commit('setSession', { userId, token });
+				localStorage.setItem('userId', userId);
+				localStorage.setItem('token', token);
+			},
+			clearSession({ commit }, payload) {
+				commit('clearSession');
+				localStorage.removeItem('userId');
+				localStorage.removeItem('token');
+			}
+		},
 		getters: {
-			session: state => state.session
+			session(state) {
+				return state.session;
+			}
 		}
 	});
 

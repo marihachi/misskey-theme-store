@@ -36,9 +36,7 @@ export default class extends Vue {
 
 		const userId = result.data.result.userId;
 		const token = result.data.result.token;
-		this.$store.commit('setSession', { userId, token });
-		localStorage.setItem('userId', userId);
-		localStorage.setItem('token', token);
+		this.$store.dispatch('setSession', { userId, token });
 	}
 }
 </script>
