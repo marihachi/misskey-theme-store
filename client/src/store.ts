@@ -6,7 +6,8 @@ export default () => {
 
 	const store = new Vuex.Store({
 		state: {
-			session: null as { userId: string, token: string } | null
+			session: null as { userId: string, token: string } | null,
+			sessionLoaded: false as boolean
 		},
 		mutations: {
 			setSession(state, payload) {
@@ -35,17 +36,16 @@ export default () => {
 				localStorage.removeItem('userId');
 				localStorage.removeItem('token');
 			},
-			loadSession({ commit }) {
+			loadSession({ commit, state }, payload) {
+				payload = payload || {};
+				if (!payload.force && state.sessionLoaded) {
+					return;
+				}
 				const userId = localStorage.getItem('userId');
 				const token = localStorage.getItem('token');
 				if (userId && token) {
 					commit('setSession', { userId: userId, token: token });
 				}
-			}
-		},
-		getters: {
-			session(state) {
-				return state.session;
 			}
 		}
 	});

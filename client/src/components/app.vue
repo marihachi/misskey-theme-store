@@ -7,7 +7,8 @@
 			</ul>
 		</div>
 		<div class="right">
-			<ul v-if="$store.getters.session != null">
+			<ul v-if="$store.state.session != null">
+				<li><router-link to="/account"><fa icon="user" />アカウントページ</router-link></li>
 				<li><a @click="logout()"><fa icon="sign-out-alt" />ログアウト</a></li>
 			</ul>
 			<ul v-else>
@@ -26,8 +27,8 @@ import { Vue, Component } from 'vue-property-decorator';
 
 @Component({ components: { } })
 export default class extends Vue {
-	logout() {
-		this.$store.dispatch('clearSession');
+	async logout() {
+		await this.$store.dispatch('clearSession');
 	}
 }
 </script>

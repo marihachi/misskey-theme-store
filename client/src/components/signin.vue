@@ -36,8 +36,8 @@ export default class extends Vue {
 
 		const userId = result.data.result.userId;
 		const token = result.data.result.token;
-		this.$store.dispatch('setSession', { userId, token });
-		this.$router.push({ path: '/' });
+		await this.$store.dispatch('setSession', { userId, token });
+		this.$router.push({ path: '/account' });
 	}
 }
 </script>
