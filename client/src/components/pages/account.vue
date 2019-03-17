@@ -3,7 +3,10 @@
 	<div v-if="accountUser">
 		<p>username: {{accountUser.username}}</p>
 
-		<input type="file" @change="e => onFileChanged(e)" accept="text/*,.misskeytheme">
+		<label for="theme-file" class="file-select">
+			テーマをアップロード
+			<input type="file" id="theme-file" @change="e => onFileChanged(e)" accept=".misskeytheme">
+		</label>
 	</div>
 	<div v-else-if="loading">
 		<p>loading ...</p>
@@ -67,5 +70,17 @@ export default class extends Vue {
 <style lang="scss" scoped>
 .account-page {
 	margin: 1.5rem;
+	.file-select {
+		display: block;
+		padding: 1rem;
+		width: 12rem;
+		border: 2px solid hsla(0, 100%, 50%, 0.4);
+		border-radius: 2rem;
+		text-align: center;
+		cursor: pointer;
+		input {
+			display: none;
+		}
+	}
 }
 </style>
