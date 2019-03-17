@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="themes-page">
 	<p>theme list</p>
 	<ul v-if="themes.length != 0">
 		<li v-for="theme in themes" :key="theme.themeId">
@@ -41,5 +41,7 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
+.themes-page {
+	margin: 1.5rem;
+}
 </style>

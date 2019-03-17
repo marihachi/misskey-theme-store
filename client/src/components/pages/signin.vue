@@ -1,26 +1,23 @@
 <template>
-<div v-if="isLogin">
-	<p>ログイン済みです</p>
-</div>
-<div v-else>
-	<signup />
+<div class="signin-page">
 	<signin />
+	<signup />
 </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import signup from '../signup.vue';
 import signin from '../signin.vue';
+import signup from '../signup.vue';
 
-@Component({ components: { signup, signin } })
+
+@Component({ components: { signin, signup } })
 export default class extends Vue {
-	get isLogin() {
-		return this.$store.getters.session;
-	}
+
 }
 </script>
 
 <style lang="scss" scoped>
-
+.signin-page {
+}
 </style>

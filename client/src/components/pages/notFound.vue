@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="not-found-page">
 	<p>ページが見つかりません</p>
 </div>
 </template>
@@ -14,5 +14,7 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
+.not-found-page {
+	margin: 1.5rem;
+}
 </style>

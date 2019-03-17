@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="users-page">
 	<p>user list</p>
 </div>
 </template>
@@ -15,5 +15,6 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
+.users-page {
+}
 </style>

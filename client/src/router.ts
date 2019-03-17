@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 // * import vue components
-import Entrance from './components/pages/entrance.vue';
+import Signin from './components/pages/signin.vue';
 import Themes from './components/pages/themes.vue';
 import Theme from './components/pages/theme.vue';
 //import Users from './components/pages/users.vue';
@@ -14,8 +14,8 @@ export default () => {
 
 	const router = new VueRouter({
 		routes: [
-			{ path: '/', component: Entrance },
-			{ path: '/theme', component: Themes, props: (route: any) => ({ query: route.query.q }) },
+			{ path: '/', component: Themes, props: (route: any) => ({ query: route.query.q }) },
+			{ path: '/signin', component: Signin },
 			{ path: '/theme/:themeId', name: 'themeDetail', component: Theme },
 			//{ path: '/user', component: Users, props: (route: any) => ({ query: route.query.q }) },
 			{ path: '/user/:username', name: 'userDetail', component: User },

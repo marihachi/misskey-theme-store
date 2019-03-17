@@ -3,13 +3,15 @@
 	<div class="global-nav">
 		<div class="left">
 			<ul>
-				<li><router-link to="/">エントランス</router-link></li>
-				<li><router-link to="/theme">テーマ一覧</router-link></li>
+				<li><router-link to="/"><fa icon="palette" />テーマ一覧</router-link></li>
 			</ul>
 		</div>
 		<div class="right">
 			<ul v-if="$store.getters.session != null">
-				<li><a @click="logout()">ログアウト</a></li>
+				<li><a @click="logout()"><fa icon="sign-out-alt" />ログアウト</a></li>
+			</ul>
+			<ul v-else>
+				<li><router-link to="/signin"><fa icon="sign-in-alt" />ログインと登録</router-link></li>
 			</ul>
 		</div>
 	</div>
