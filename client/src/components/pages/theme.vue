@@ -4,7 +4,7 @@
 	<div v-if="theme != null">
 		<p>theme name: {{theme.name}}</p>
 		<p>description: {{theme.description}}</p>
-		<p>author: {{theme.user.username}}</p>
+		<p>author: <router-link :to="{ name: 'userDetail', params: { username: theme.user.username } }">{{theme.user.username}}</router-link></p>
 		<p>theme file: <a :href=themeUrl>download</a></p>
 	</div>
 	<div v-else>
