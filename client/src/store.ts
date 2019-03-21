@@ -1,16 +1,17 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
+import StorePart from './utils/StorePart';
 
 export default () => {
 	Vue.use(Vuex);
 
-	const sessionStore = {
+	const sessionStorePart = new StorePart({
 		state: {
 			session: null as { user: { [x: string]: any }, token: string } | null
 		},
 		mutations: {
-			setSession(state: any, payload: any) {
+			setSession(state, payload) {
 				if (!payload.user || !payload.token) {
 					throw new Error('invalid payload');
 				}
@@ -19,12 +20,12 @@ export default () => {
 					token: payload.token
 				};
 			},
-			clearSession(state: any) {
+			clearSession(state) {
 				state.session = null;
 			}
 		},
 		actions: {
-			async setSession({ commit }: any, payload: any) {
+			async setSession({ commit }, payload) {
 				payload = payload || {};
 				const userId = payload.userId;
 				const token = payload.token;
@@ -40,12 +41,12 @@ export default () => {
 				localStorage.setItem('userId', userId);
 				localStorage.setItem('token', token);
 			},
-			clearSession({ commit }: any) {
+			clearSession({ commit }) {
 				commit('clearSession');
 				localStorage.removeItem('userId');
 				localStorage.removeItem('token');
 			},
-			async loadSession({ commit, state }: any, payload: any) {
+			async loadSession({ commit, state }, payload) {
 				payload = payload || {};
 				if (!payload.force && state.session != null) {
 					return true;
@@ -64,30 +65,30 @@ export default () => {
 				return true;
 			}
 		}
-	};
+	});
 
-	const themeStore = {
+	const themeStorePart = new StorePart({
 		state: {
 			themes: [] as { [x: string]: any }[],
 			themesFetched: false as boolean
 		},
 		mutations: {
-			setThemes(state: any, payload: any) {
+			setThemes(state, payload) {
 				if (!payload.themes) {
 					throw new Error('invalid payload');
 				}
 				state.themes = payload.themes;
 			},
-			setThemesFetched(state: any) {
+			setThemesFetched(state) {
 				state.themesFetched = true;
 			},
-			clearThemes(state: any) {
+			clearThemes(state) {
 				state.themes = [];
 				state.themesFetched = false;
 			}
 		},
 		actions: {
-			async fetchThemes({ commit }: any) {
+			async fetchThemes({ commit }) {
 				const result = await axios.post('/theme/list', { });
 				if (result.status != 200) {
 					throw new Error(result.data.error.reason);
@@ -97,20 +98,20 @@ export default () => {
 				commit('setThemesFetched');
 			}
 		}
-	};
+	});
 
 	const store = new Vuex.Store({
 		state: {
-			...sessionStore.state,
-			...themeStore.state
+			...sessionStorePart.state as any,
+			...themeStorePart.state as any
 		},
 		mutations: {
-			...sessionStore.mutations,
-			...themeStore.mutations
+			...sessionStorePart.mutations as any,
+			...themeStorePart.mutations as any
 		},
 		actions: {
-			...sessionStore.actions,
-			...themeStore.actions
+			...sessionStorePart.actions as any,
+			...themeStorePart.actions as any
 		}
 	});
 
