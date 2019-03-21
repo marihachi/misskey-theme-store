@@ -18,6 +18,7 @@
 import { Vue, Component } from 'vue-property-decorator';
 import axios from 'axios';
 import { sessionModule } from '../../store';
+import { Theme } from '../../store/theme';
 
 const readFile = (file: Blob) => new Promise<any>((resolve, reject) => {
 	const reader = new FileReader();
@@ -41,12 +42,27 @@ export default class extends Vue {
 	}
 
 	async onFileChanged(e: any) {
+		if (!sessionModule.session) {
+			return;
+		}
+
 		const file = e.target.files[0];
 		if (!file) {
 			return;
 		}
 		const text = await readFile(file);
 		console.log(text);
+
+		const result = await axios.post('/theme/register', {
+			token: sessionModule.session.token,
+			themeData: text
+		});
+		if (result.status != 200) {
+			console.error(result.data);
+			alert('テーマファイルの登録に失敗しました');
+			return;
+		}
+		const theme: Theme = result.data.result;
 	}
 }
 </script>
