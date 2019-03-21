@@ -29,6 +29,10 @@ import { Vue, Component } from 'vue-property-decorator';
 export default class extends Vue {
 	async logout() {
 		await this.$store.dispatch('clearSession');
+		if (this.$router.currentRoute.path =='/account') {
+			this.$router.push({ path: '/' });
+		}
+
 	}
 }
 </script>

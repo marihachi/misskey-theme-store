@@ -36,6 +36,7 @@
     "css-loader": "2.1.x",
     "express": "^4.16.4",
     "json5": "^2.1.0",
+    "moment": "^2.24.0",
     "mongodb": "^3.1.13",
     "node-sass": "4.11.x",
     "normalize.css": "^8.0.1",

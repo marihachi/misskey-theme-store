@@ -8,11 +8,8 @@
 			<input type="file" id="theme-file" @change="e => onFileChanged(e)" accept=".misskeytheme">
 		</label>
 	</div>
-	<div v-else-if="loading">
-		<p>loading ...</p>
-	</div>
 	<div v-else>
-		<p>failed to fetch account info</p>
+		<p>ログインしてください</p>
 	</div>
 </div>
 </template>
@@ -34,26 +31,13 @@ const readFile = (file: Blob) => new Promise<any>((resolve, reject) => {
 
 @Component({ components: { } })
 export default class extends Vue {
-	loading: boolean = true;
-	accountUser: any = null;
 
-	async created() {
-		await this.$store.dispatch('loadSession');
-		const session = this.$store.state.session;
+	get accountUser() {
+		const { session } = this.$store.state;
 		if (!session) {
-			this.loading = false;
-			return;
+			return null;
 		}
-
-		const result = await axios.post('/user/get', { userId: session.userId });
-		if (result.status != 200) {
-			this.loading = false;
-			console.error(result.data);
-			alert('アカウント情報の取得に失敗しました');
-			return;
-		}
-		this.accountUser = result.data.result;
-		this.loading = false;
+		return session.user;
 	}
 
 	async onFileChanged(e: any) {

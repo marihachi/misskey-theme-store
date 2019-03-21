@@ -29,13 +29,16 @@ type Theme = {
 
 @Component({ components: { } })
 export default class extends Vue {
-	themes: Theme[] = [];
+	get themes(): Theme[] {
+		return this.$store.state.themes;
+	};
 
 	@Prop() query!: string;
 
 	async created() {
-		const result = await axios.post('/theme/list', { });
-		this.themes = (result.data.result as Theme[]);
+		if (!this.$store.state.themesFetched) {
+			await this.$store.dispatch('fetchThemes');
+		}
 	}
 }
 </script>

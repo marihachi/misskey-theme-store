@@ -9,8 +9,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component({ components: { } })
 export default class extends Vue {
-	@Prop()
-	query!: string;
+	@Prop() query!: string;
 }
 </script>
 

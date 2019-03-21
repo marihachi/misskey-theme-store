@@ -15,22 +15,37 @@ import {
 
 import 'normalize.css';
 
-// * font awesome
-library.add(
-	faUser,
-	faPalette,
-	faSignInAlt,
-	faUserPlus,
-	faSignOutAlt
-);
-Vue.component('fa', FontAwesomeIcon);
+async function entry() {
+	// * font awesome
+	library.add(
+		faUser,
+		faPalette,
+		faSignInAlt,
+		faUserPlus,
+		faSignOutAlt
+	);
+	Vue.component('fa', FontAwesomeIcon);
 
-const app = new Vue({
-	el: '#app',
-	store: store(),
-	router: router(),
-	components: { App },
-	template: '<App/>'
+	const app = new Vue({
+		store: store(),
+		router: router(),
+		components: { App },
+		template: '<App/>'
+	});
+
+	console.log('loading session ...');
+	try {
+		await app.$store.dispatch('loadSession');
+	}
+	catch (err) {
+		if (err.message == 'no_session') { }
+	}
+
+	console.log('mouting app ...');
+	app.$mount('#app');
+};
+
+entry()
+.catch(err => {
+	console.error(err);
 });
-
-app.$store.dispatch('loadSession');
