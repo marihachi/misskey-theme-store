@@ -17,6 +17,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import axios from 'axios';
+import { sessionModule } from '../../store';
 
 const readFile = (file: Blob) => new Promise<any>((resolve, reject) => {
 	const reader = new FileReader();
@@ -33,11 +34,10 @@ const readFile = (file: Blob) => new Promise<any>((resolve, reject) => {
 export default class extends Vue {
 
 	get accountUser() {
-		const { session } = this.$store.state;
-		if (!session) {
+		if (!sessionModule.session) {
 			return null;
 		}
-		return session.user;
+		return sessionModule.session.user;
 	}
 
 	async onFileChanged(e: any) {

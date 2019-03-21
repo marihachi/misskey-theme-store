@@ -16,6 +16,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import axios from 'axios';
+import { sessionModule } from '../store';
 
 @Component({ components: { } })
 export default class extends Vue {
@@ -36,7 +37,7 @@ export default class extends Vue {
 
 		const userId = result.data.result.userId;
 		const token = result.data.result.token;
-		await this.$store.dispatch('setSession', { userId, token });
+		await sessionModule.setSession({ userId, token });
 		this.$router.push({ path: '/account' });
 	}
 }

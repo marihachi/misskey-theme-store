@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import store from './store';
+import store, { sessionModule } from './store';
 import router from './router';
 import App from './components/app.vue';
 
@@ -27,7 +27,7 @@ async function entry() {
 	Vue.component('fa', FontAwesomeIcon);
 
 	const app = new Vue({
-		store: store(),
+		store: store,
 		router: router(),
 		components: { App },
 		template: '<App/>'
@@ -35,7 +35,7 @@ async function entry() {
 
 	console.log('loading session ...');
 	try {
-		await app.$store.dispatch('loadSession');
+		await sessionModule.loadSession();
 	}
 	catch (err) {
 		if (err.message == 'no_session') { }

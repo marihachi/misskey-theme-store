@@ -54,6 +54,7 @@
     "vue-style-loader": "4.1.x",
     "vue-template-compiler": "2.6.x",
     "vuex": "3.1.x",
+    "vuex-module-decorators": "^0.9.8",
     "webpack": "4.29.x",
     "webpack-cli": "3.2.x"
   }

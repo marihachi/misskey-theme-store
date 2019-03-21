@@ -17,27 +17,19 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import axios from 'axios';
-
-type Theme = {
-	themeId: string,
-	user: any,
-	name: string,
-	description: string,
-	themeFileName: string,
-	imageFileName: string
-};
+import { themeModule } from '../../store';
 
 @Component({ components: { } })
 export default class extends Vue {
-	get themes(): Theme[] {
-		return this.$store.state.themes;
+	get themes() {
+		return themeModule.themes;
 	};
 
 	@Prop() query!: string;
 
 	async created() {
-		if (!this.$store.state.themesFetched) {
-			await this.$store.dispatch('fetchThemes');
+		if (!themeModule.themesFetched) {
+			await themeModule.fetchThemes();
 		}
 	}
 }
