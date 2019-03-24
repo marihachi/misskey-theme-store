@@ -372,7 +372,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		const themeDocs: IDocument[] = await serverContext.db.findArray('themes', {
 			state: { $ne: 'deleted' }
-		});
+		}, { isAscending: false });
 
 		const packedThemePromises = themeDocs.map(themeDoc => packTheme(themeDoc, serverContext));
 		const packedThemes = await Promise.all(packedThemePromises);

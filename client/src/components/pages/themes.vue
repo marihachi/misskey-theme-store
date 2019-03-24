@@ -42,17 +42,21 @@ export default class extends Vue {
 	margin: 1.5rem;
 
 	ul {
+		display: flex;
+		flex-wrap: wrap;
 		padding: 0;
 
 		> li {
 			list-style: none;
 			background-color: hsla(28, 75%, 40%, 0.14);
-			margin: 1rem 0;
+			margin: 1rem;
 			border-radius: 0.5rem;
 
 			> div {
 				border-radius: 0.5rem;
 				padding: 1rem;
+				height: 16rem;
+				width: 16rem;
 
 				p {
 					margin: 0 0 1rem 0;
