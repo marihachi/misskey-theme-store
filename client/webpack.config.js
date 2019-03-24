@@ -2,7 +2,6 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const path = require('path');
 
 module.exports = {
-	mode: 'development',
 	entry: path.resolve(__dirname, './src/entry.ts'),
 	output: {
 		path: path.resolve(__dirname, '../built/client/scripts'),
@@ -12,29 +11,29 @@ module.exports = {
 		rules: [
 			{
 				test: /\.vue$/,
-				loader: 'vue-loader',
+				use: [
+					{ loader: 'vue-loader' }
+				]
 			},
 			{
 				test: /\.scss$/,
 				use: [
-					'vue-style-loader',
-					'css-loader',
-					'sass-loader'
+					{ loader: 'vue-style-loader' },
+					{ loader: 'css-loader' },
+					{ loader: 'sass-loader' }
 				]
 			},
 			{
 				test: /\.ts$/,
-				loader: 'ts-loader',
-				options: { appendTsSuffixTo: [/\.vue$/] }
+				use: [
+					{ loader: 'ts-loader', options: { appendTsSuffixTo: [/\.vue$/] } }
+				]
 			},
 			{
 				test: /\.css/,
-				loaders: [
-					'style-loader',
-					{
-						loader: 'css-loader',
-						options: { url: false }
-					}
+				use: [
+					{ loader: 'style-loader' },
+					{ loader: 'css-loader', options: { url: false } }
 				]
 			},
 		]

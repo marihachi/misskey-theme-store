@@ -37,7 +37,6 @@ export default class extends Vue {
 		if (this.$router.currentRoute.path =='/account') {
 			this.$router.push({ path: '/' });
 		}
-
 	}
 }
 </script>
