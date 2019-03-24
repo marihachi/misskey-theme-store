@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import axios from 'axios';
+import api from '../utils/requestApi';
 import { sessionModule } from '../store';
 
 @Component({ components: { } })
@@ -24,19 +24,19 @@ export default class extends Vue {
 	password: string = '';
 
 	async signup() {
-		const result = await axios.post(`/signup`, {
+		const res = await api(`/signup`, {
 			username: this.username,
 			password: this.password
 		});
 
-		if (result.status != 200) {
-			console.error(result.data);
+		if (res.error) {
+			console.error(res.error);
 			alert('登録に失敗しました');
 			return;
 		}
 
-		const userId = result.data.result.userId;
-		const token = result.data.result.token;
+		const userId = res.result.userId;
+		const token = res.result.token;
 		await sessionModule.setSession({ userId, token });
 		this.$router.push({ path: '/account' });
 	}

@@ -1,6 +1,6 @@
 import { Store } from 'vuex';
 import { Module, VuexModule, getModule, Mutation, Action } from 'vuex-module-decorators';
-import axios from 'axios';
+import api from '../utils/requestApi';
 
 type Session = { user: { [x: string]: any }, token: string };
 type SessionSource = { userId: string, token: string };
@@ -35,11 +35,11 @@ export default function<T> (store: Store<T>) {
 			if (!userId || !token) {
 				throw new Error('invalid payload');
 			}
-			const result = await axios.post('/user/get', { userId });
-			if (result.status != 200) {
-				throw new Error(result.data.error.reason);
+			const res = await api('/user/get', { userId });
+			if (res.error) {
+				throw new Error(res.error.reason);
 			}
-			const user = result.data.result;
+			const user = res.result;
 			this.setSessionState({ user, token });
 			localStorage.setItem('userId', userId);
 			localStorage.setItem('token', token);
@@ -63,11 +63,11 @@ export default function<T> (store: Store<T>) {
 			if (!userId || !token) {
 				return false;
 			}
-			const result = await axios.post('/user/get', { userId });
-			if (result.status != 200) {
-				throw new Error(result.data.error.reason);
+			const res = await api('/user/get', { userId });
+			if (res.error) {
+				throw new Error(res.error.reason);
 			}
-			const user = result.data.result;
+			const user = res.result;
 			this.setSessionState({ user, token });
 			return true;
 		}

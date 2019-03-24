@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import axios from 'axios';
+import api from '../../utils/requestApi';
 import { sessionModule } from '../../store';
 import { Theme } from '../../store/theme';
 
@@ -53,16 +53,16 @@ export default class extends Vue {
 		const text = await readFile(file);
 		console.log(text);
 
-		const result = await axios.post('/theme/register', {
+		const res = await api('/theme/register', {
 			token: sessionModule.session.token,
 			themeData: text
 		});
-		if (result.status != 200) {
-			console.error(result.data);
+		if (res.error) {
+			console.error(res.error);
 			alert('テーマファイルの登録に失敗しました');
 			return;
 		}
-		const theme: Theme = result.data.result;
+		const theme: Theme = res.result;
 	}
 }
 </script>

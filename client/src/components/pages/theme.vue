@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import axios from 'axios';
+import api from '../../utils/requestApi';
 
 type Theme = {
 	themeId: string,
@@ -40,8 +40,8 @@ export default class extends Vue {
 	}
 
 	async created() {
-		const result = await axios.post('/theme/get', { themeId: this.$route.params.themeId });
-		this.theme = (result.data.result as Theme);
+		const res = await api('/theme/get', { themeId: this.$route.params.themeId });
+		this.theme = (res.result as Theme);
 	}
 }
 </script>

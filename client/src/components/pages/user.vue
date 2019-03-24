@@ -22,25 +22,26 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import axios from 'axios';
+import api from '../../utils/requestApi';
 
 @Component({ components: { } })
 export default class extends Vue {
 	user: any = null;
 
 	async created() {
-		const resolved = await axios.post('/user/resolve', { username: this.$route.params.username });
-		if (resolved.status != 200) {
-			console.error(resolved.data);
+		const resolved = await api('/user/resolve', { username: this.$route.params.username });
+		if (resolved.error) {
+			console.error(resolved.error);
 			return;
 		}
-		const userId = resolved.data.result;
-		const userFetched = await axios.post('/user/get', { userId: userId });
-		if (userFetched.status != 200) {
-			console.error(userFetched.data);
+		const userId = resolved.result;
+
+		const userFetched = await api('/user/get', { userId: userId });
+		if (userFetched.error) {
+			console.error(userFetched.error);
 			return;
 		}
-		this.user = userFetched.data.result;
+		this.user = userFetched.result;
 	}
 }
 </script>

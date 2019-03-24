@@ -1,6 +1,6 @@
 import { Store } from 'vuex';
 import { Module, VuexModule, getModule, Mutation, Action } from 'vuex-module-decorators';
-import axios from 'axios';
+import api from '../utils/requestApi';
 
 export type Theme = {
 	themeId: string,
@@ -39,11 +39,11 @@ export default function<T> (store: Store<T>) {
 
 		@Action
 		async fetchThemes() {
-			const result = await axios.post('/theme/list', { });
-			if (result.status != 200) {
-				throw new Error(result.data.error.reason);
+			const res = await api('/theme/list', { });
+			if (res.error) {
+				throw new Error(res.error.reason);
 			}
-			const themes = result.data.result;
+			const themes = res.result;
 			this.setThemesState({ themes });
 			this.setThemesFetchedState();
 		}
