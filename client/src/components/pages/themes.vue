@@ -2,9 +2,13 @@
 <div class="themes-page">
 	<ul v-if="themes.length != 0">
 		<li v-for="theme in themes" :key="theme.themeId">
-			<p>{{theme.name}}</p>
-			<p>{{theme.description}}</p>
-			<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }">詳細ページへ</router-link>
+			<div :style="{ background: theme.secondaryColor, color: theme.textColor }">
+				<p>{{theme.name}}</p>
+				<p>{{theme.description}}</p>
+				<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }" :style="{ color: theme.primaryColor }">
+					詳細ページへ
+				</router-link>
+			</div>
 		</li>
 	</ul>
 	<div v-else>
@@ -40,15 +44,19 @@ export default class extends Vue {
 	ul {
 		padding: 0;
 
-		li {
+		> li {
 			list-style: none;
 			background-color: hsla(28, 75%, 40%, 0.14);
-			padding: 2rem;
 			margin: 1rem 0;
 			border-radius: 0.5rem;
 
-			p {
-				margin: 0 0 1rem 0;
+			> div {
+				border-radius: 0.5rem;
+				padding: 1rem;
+
+				p {
+					margin: 0 0 1rem 0;
+				}
 			}
 		}
 	}
