@@ -7,7 +7,7 @@ import ServerContext from '../core/ServerContext';
 import MongoProvider from '../core/MongoProvider';
 import log from '../core/log';
 import loadConfig from '../core/loadConfig';
-import mainRouter from './mainRouter';
+import router from './router';
 import IServerConfig from './IServerConfig';
 
 export default async function start() {
@@ -74,7 +74,7 @@ export default async function start() {
 	app.use('/', Express.static(path.resolve(__dirname, '../client/pages'), { etag: false }));
 	app.use('/theme/file', Express.static(path.resolve(process.cwd(), 'themeFiles'), { etag: false }));
 	app.use('/theme/image', Express.static(path.resolve(process.cwd(), 'themeImages'), { etag: false }));
-	app.use(mainRouter(serverContext));
+	app.use(router(serverContext));
 
 	// not found
 	app.post('*', (req, res) => {
