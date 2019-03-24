@@ -21,7 +21,7 @@ for production:
 ### 2. Generate server config
 `npm run init`
 
-### 3. start server
+### 3. Start server
 `npm run start`
 
 Enjoy!
