@@ -10,7 +10,10 @@ export async function packTheme(themeDoc: IDocument, serverContext: ServerContex
 		name: themeDoc.name,
 		description: themeDoc.description,
 		themeFileName: themeDoc.themeFileName,
-		imageFileName: themeDoc.imageFileName
+		imageFileName: themeDoc.imageFileName,
+		primaryColor: themeDoc.primaryColor,
+		secondaryColor: themeDoc.secondaryColor,
+		textColor: themeDoc.textColor
 	}
 }
 

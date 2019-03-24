@@ -197,6 +197,20 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			return;
 		}
 
+		const themeDataValidation = $.object({
+			name: $.string,
+			desc: $.string,
+			vars: $.object({
+				primary: $.string,
+				secondary: $.string,
+				text: $.string
+			})
+		});
+		if (themeDataValidation.nok(parsedThemeData)) {
+			res.status(400).json({ error: { reason: 'invalid_theme_data' } });
+			return;
+		}
+
 		// try to make dir
 		try {
 			await fs.mkdir(path.resolve(process.cwd(), 'themeFiles'));
@@ -230,7 +244,10 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			description: parsedThemeData.desc,
 			themeFileName: fileName,
 			imageFileName: null,
-			state: 'normal'
+			state: 'normal',
+			primaryColor: parsedThemeData.vars.primary,
+			secondaryColor: parsedThemeData.vars.secondary,
+			textColor: parsedThemeData.vars.text
 		});
 
 		res.json({
