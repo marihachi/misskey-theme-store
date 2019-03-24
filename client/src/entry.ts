@@ -5,13 +5,12 @@ import App from './components/app.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import {
-	faUser,
-	faPalette,
-	faSignInAlt,
-	faUserPlus,
-	faSignOutAlt
-} from '@fortawesome/free-solid-svg-icons';
+
+import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
+import { faPalette } from '@fortawesome/free-solid-svg-icons/faPalette';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 
 import 'normalize.css';
 
