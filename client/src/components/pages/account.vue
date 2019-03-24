@@ -73,11 +73,11 @@ export default class extends Vue {
 
 	.file-select {
 		display: block;
-		padding: 1rem;
+		padding: 0.6rem;
 		width: 12rem;
 		background-color: hsl(25, 76%, 63%);
 		color: hsl(0, 0%, 100%);
-		border-radius: 2rem;
+		border-radius: 0.8rem;
 		text-align: center;
 		cursor: pointer;
 
