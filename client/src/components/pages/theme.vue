@@ -1,14 +1,13 @@
 <template>
 <div class="theme-page">
-	<p>theme detail</p>
 	<div v-if="theme != null">
-		<p>theme name: {{theme.name}}</p>
-		<p>description: {{theme.description}}</p>
-		<p>author: <router-link :to="{ name: 'userDetail', params: { username: theme.user.username } }">{{theme.user.username}}</router-link></p>
-		<p>theme file: <a :href=themeUrl>download</a></p>
+		<p>テーマ名: {{theme.name}}</p>
+		<p>説明: {{theme.description}}</p>
+		<p>作者: <router-link :to="{ name: 'userDetail', params: { username: theme.user.username } }">@{{theme.user.username}}</router-link></p>
+		<p>テーマファイル: <a :href=themeUrl>download</a></p>
 	</div>
 	<div v-else>
-		<p>now loading...</p>
+		<p>読み込んでいます...</p>
 	</div>
 </div>
 </template>

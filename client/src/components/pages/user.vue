@@ -1,18 +1,16 @@
 <template>
 <div class="user-page">
-	<p>user detail</p>
 	<div v-if="user">
-		<p>username: {{user.username}}</p>
-		<p>userId: {{user.userId}}</p>
-		<p>themes:</p>
+		<p>@{{user.username}} さんのページ</p>
+		<p>投稿されたテーマ:</p>
 		<ul v-if="user.themes.length != 0">
 			<li v-for="theme in user.themes" :key="theme.themeId">
 				<p>{{theme.name}}</p>
 				<p>{{theme.description}}</p>
-				<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }">detail page</router-link>
+				<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }">詳細ページへ</router-link>
 			</li>
 		</ul>
-		<p v-else>テーマは投稿されていません</p>
+		<p v-else>まだテーマを投稿していません</p>
 	</div>
 	<div v-else>
 		<p>ユーザーが見つかりません</p>
@@ -48,5 +46,6 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 .user-page {
+	margin: 1.5rem;
 }
 </style>

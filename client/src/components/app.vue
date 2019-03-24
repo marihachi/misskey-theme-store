@@ -46,8 +46,8 @@ html {
 	font-size: 14px;
 }
 body {
-	background-color: hsl(11, 100%, 97%);
-	color: hsl(0, 44%, 57%);
+	background-color: hsl(25, 100%, 96%);
+	color: hsl(25, 72%, 46%);
 }
 </style>
 
@@ -56,6 +56,11 @@ body {
 	.global-nav {
 		display: flex;
 		background-color: hsl(22, 33%, 76%);
+
+		a {
+			color: hsl(20, 70%, 37%);
+			text-decoration: none;
+		}
 		.left, .right {
 			ul {
 				list-style: none;

@@ -15,5 +15,6 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 .users-page {
+	margin: 1.5rem;
 }
 </style>
