@@ -3,7 +3,7 @@
 	<div v-if="accountUser">
 		<p>@{{accountUser.username}}</p>
 
-		<label for="theme-file" class="file-select">
+		<label for="theme-file" class="file-select button">
 			テーマをアップロード
 			<input type="file" id="theme-file" @change="e => onFileChanged(e)" accept=".misskeytheme">
 		</label>
@@ -72,15 +72,6 @@ export default class extends Vue {
 	margin: 1.5rem;
 
 	.file-select {
-		display: block;
-		padding: 0.6rem;
-		width: 12rem;
-		background-color: hsl(25, 76%, 63%);
-		color: hsl(0, 0%, 100%);
-		border-radius: 0.8rem;
-		text-align: center;
-		cursor: pointer;
-
 		input {
 			display: none;
 		}

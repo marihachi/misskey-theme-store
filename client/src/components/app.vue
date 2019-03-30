@@ -49,10 +49,32 @@ export default class extends Vue {
 <style lang="scss">
 html {
 	font-size: 14px;
-}
-body {
-	background-color: hsl(25, 100%, 96%);
-	color: hsl(25, 72%, 46%);
+
+	body {
+		background-color: hsl(25, 100%, 96%);
+		color: hsl(25, 72%, 46%);
+
+		button.button {
+			border: none;
+			outline: 0;
+		}
+
+		a.button {
+			text-decoration: none;
+		}
+
+		.button {
+			display: block;
+			padding: 0.6rem;
+			width: 100%;
+			background-color: hsl(25, 76%, 63%);
+			color: hsl(0, 0%, 100%);
+			border-radius: 0.8rem;
+			text-align: center;
+			cursor: pointer;
+			margin: 1rem 0;
+		}
+	}
 }
 </style>
 
