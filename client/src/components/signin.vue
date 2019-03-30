@@ -47,8 +47,6 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 .signin {
-	margin: 1.5rem;
-
 	form {
 		.text-box {
 			width: 16rem;

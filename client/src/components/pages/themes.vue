@@ -2,12 +2,18 @@
 <div class="themes-page">
 	<ul v-if="themes.length != 0">
 		<li v-for="theme in themes" :key="theme.themeId">
-			<div :style="{ background: theme.secondaryColor, color: theme.textColor }">
-				<p>{{theme.name}}</p>
-				<p>{{theme.description}}</p>
-				<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }" :style="{ color: theme.primaryColor }">
-					詳細ページへ
-				</router-link>
+			<div class="card" :style="{ background: theme.secondaryColor, color: theme.textColor }">
+				<div class="name">
+					<p>{{theme.name}}</p>
+				</div>
+				<div class="desc">
+					<p>{{theme.description}}</p>
+				</div>
+				<div class="details-link">
+					<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }" :style="{ color: theme.primaryColor }">
+						詳細ページへ
+					</router-link>
+				</div>
 			</div>
 		</li>
 	</ul>
@@ -48,18 +54,31 @@ export default class extends Vue {
 
 		> li {
 			list-style: none;
-			background-color: hsla(28, 75%, 40%, 0.14);
 			margin: 1rem;
-			border-radius: 0.5rem;
 
-			> div {
+			.card {
+				display: flex;
+				flex-direction: column;
 				border-radius: 0.5rem;
 				padding: 1rem;
-				height: 16rem;
 				width: 16rem;
+				min-height: 8rem;
 
 				p {
 					margin: 0 0 1rem 0;
+				}
+
+				.name {
+				}
+
+				.desc {
+					p {
+						font-size: 0.8rem;
+					}
+				}
+
+				.details-link {
+					margin-top: auto;
 				}
 			}
 		}

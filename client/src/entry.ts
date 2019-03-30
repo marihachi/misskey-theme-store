@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 import { faPalette } from '@fortawesome/free-solid-svg-icons/faPalette';
+import { faPaintBrush } from '@fortawesome/free-solid-svg-icons/faPaintBrush';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
@@ -19,6 +20,7 @@ async function entry() {
 	library.add(
 		faUser,
 		faPalette,
+		faPaintBrush,
 		faSignInAlt,
 		faUserPlus,
 		faSignOutAlt

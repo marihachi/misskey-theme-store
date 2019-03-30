@@ -6,6 +6,11 @@
 				<li><router-link to="/"><fa icon="palette" />テーマ一覧</router-link></li>
 			</ul>
 		</div>
+		<div class="center">
+			<div>
+				<fa class="icon" icon="paint-brush" />
+			</div>
+		</div>
 		<div class="right">
 			<ul v-if="isLogin">
 				<li><router-link to="/account"><fa icon="user" />アカウントページ</router-link></li>
@@ -56,28 +61,42 @@ body {
 	.global-nav {
 		display: flex;
 		background-color: hsl(22, 33%, 76%);
-
+		height: 3.5rem;
 		a {
 			color: hsl(20, 70%, 37%);
 			text-decoration: none;
 		}
-		.left, .right {
-			ul {
-				list-style: none;
-				padding-left: 0;
+		.left, .right, .center {
+			> * {
+				display: flex;
+				align-items: center;
+				padding: 0;
 				margin: 0;
+				height: 100%;
+			}
+			> ul {
+				list-style: none;
 				li {
-					display: inline-block;
 					a {
-						display: inline-block;
-						padding: 1.2rem 2.4rem;
+						display: inline-flex;
+						align-items: center;
+						padding: 0 2rem;
 						cursor: pointer;
+						height: 100%;
 					}
 				}
 			}
 		}
+		.left {
+			margin-right: auto;
+		}
 		.right {
 			margin-left: auto;
+		}
+		.center {
+			.icon {
+				font-size: 1.4rem;
+			}
 		}
 	}
 }

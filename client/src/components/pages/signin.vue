@@ -1,7 +1,9 @@
 <template>
 <div class="signin-page">
-	<signin />
-	<signup />
+	<div class="container">
+		<signin />
+		<signup />
+	</div>
 </div>
 </template>
 
@@ -18,5 +20,13 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 .signin-page {
+	display: flex;
+	> .container {
+		margin: auto;
+		> div {
+			padding: 2rem 1.5rem;
+		}
+	}
+
 }
 </style>
