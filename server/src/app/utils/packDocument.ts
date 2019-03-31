@@ -26,7 +26,8 @@ export function packUser(userDoc: IDocument) {
 
 export async function packUserWithThemes(userDoc: IDocument, serverContext: ServerContext) {
 	const themeDocs: IDocument[] = await serverContext.db.findArray('themes', {
-		userId: userDoc._id
+		userId: userDoc._id,
+		state: { $ne: 'deleted' }
 	});
 	const packedThemePromises = themeDocs.map(themeDoc => packTheme(themeDoc, serverContext));
 	const packedThemes = await Promise.all(packedThemePromises);
