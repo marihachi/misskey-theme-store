@@ -2,6 +2,7 @@ import Vue from 'vue';
 import store, { sessionModule } from './store';
 import router from './router';
 import App from './components/app.vue';
+import observeEvent from './utils/observeEvent';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -44,6 +45,11 @@ async function entry() {
 
 	console.log('mouting app ...');
 	app.$mount('#app');
+
+	observeEvent()
+	.catch(err => {
+		console.log('fetch events error:', err);
+	});
 };
 
 entry()
