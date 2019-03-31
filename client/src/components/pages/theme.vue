@@ -16,7 +16,7 @@
 						スクリーンショットの登録
 						<input type="file" id="image-file" @change="e => onFileChanged(e)" accept=".jpg, .png">
 					</label>
-					<button class="button">テーマの削除</button>
+					<button class="button" @click="deleteTheme()">テーマの削除</button>
 				</div>
 			</div>
 		</div>
@@ -64,6 +64,14 @@ export default class extends Vue {
 	async created() {
 		const res = await api('/theme/get', { themeId: this.$route.params.themeId });
 		this.theme = (res.result as Theme);
+	}
+
+	async deleteTheme() {
+		if (!sessionModule.session) return;
+		const res = await api('/theme/delete', {
+			token: sessionModule.session.token,
+			themeId: this.$route.params.themeId
+		});
 	}
 }
 </script>
