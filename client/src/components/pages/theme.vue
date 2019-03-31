@@ -14,7 +14,7 @@
 					<h2>投稿したテーマの設定</h2>
 					<label for="image-file" class="file-select button">
 						スクリーンショットの登録
-						<input type="file" id="image-file" @change="e => onFileChanged(e)" accept=".jpg .png">
+						<input type="file" id="image-file" @change="e => onFileChanged(e)" accept=".jpg, .png">
 					</label>
 					<button class="button">テーマの削除</button>
 				</div>
