@@ -36,3 +36,10 @@ export async function packUserWithThemes(userDoc: IDocument, serverContext: Serv
 		themes: packedThemes
 	};
 }
+
+export function packEvent(eventDoc: IDocument) {
+	return {
+		type: eventDoc.type,
+		...eventDoc.content
+	};
+}

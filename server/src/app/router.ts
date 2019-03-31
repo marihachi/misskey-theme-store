@@ -9,7 +9,8 @@ import buildHash from '../core/buildHash';
 import IDocument from '../core/IDocument';
 import log from '../core/log';
 import { authentication } from './utils/session';
-import { packTheme, packUserWithThemes } from './utils/packDocument';
+import { packTheme, packUserWithThemes, packEvent } from './utils/packDocument';
+import { ObjectId } from 'bson';
 
 export default function mainRouter(serverContext: ServerContext): Router {
 	const { db } = serverContext;
@@ -162,7 +163,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	router.post('/user/get', async (req, res) => {
 
 		// param: userId
-		const [userId, userIdErr] = $.string.get(req.body.userId);
+		const [userId, userIdErr] = $.string.pipe(s => ObjectId.isValid(s)).get(req.body.userId);
 		if (userIdErr) {
 			res.status(400).json({ error: { reason: 'invalid_param' } });
 			return;
@@ -266,7 +267,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	router.post('/theme/image/register', authenticate, async (req, res) => {
 
 		// param: themeId
-		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		const [themeId, themeIdErr] = $.string.pipe(s => ObjectId.isValid(s)).get(req.body.themeId);
 		if (themeIdErr) {
 			res.status(400).json({ error: { reason: 'invalid_param' } });
 			return;
@@ -352,7 +353,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	router.post('/theme/get', async (req, res) => {
 
 		// param: themeId
-		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		const [themeId, themeIdErr] = $.string.pipe(s => ObjectId.isValid(s)).get(req.body.themeId);
 		if (themeIdErr) {
 			res.status(400).json({ error: { reason: 'invalid_param' } });
 			return;
@@ -393,7 +394,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	router.post('/theme/update', authenticate, async (req, res) => {
 
 		// param: themeId
-		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		const [themeId, themeIdErr] = $.string.pipe(s => ObjectId.isValid(s)).get(req.body.themeId);
 		if (themeIdErr) {
 			res.status(400).json({ error: { reason: 'invalid_param' } });
 			return;
@@ -439,7 +440,7 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	router.post('/theme/delete', authenticate, async (req, res) => {
 
 		// param: themeId
-		const [themeId, themeIdErr] = $.string.get(req.body.themeId);
+		const [themeId, themeIdErr] = $.string.pipe(s => ObjectId.isValid(s)).get(req.body.themeId);
 		if (themeIdErr) {
 			res.status(400).json({ error: { reason: 'invalid_param' } });
 			return;
@@ -465,6 +466,32 @@ export default function mainRouter(serverContext: ServerContext): Router {
 	});
 
 	//#endregion Theme API
+
+	// list events
+	router.post('/event/list', async (req, res) => {
+
+		// param: newerCursor
+		const [newerCursor, newerCursorErr] =
+			$.string.optional.nullable.pipe(s => ObjectId.isValid(s)).get(req.body.newerCursor) as [string | undefined, Error];
+		if (newerCursorErr) {
+			res.status(400).json({ error: { reason: 'invalid_param' } });
+			return;
+		}
+
+		const queryFindEvents: { [x: string]: any } = { };
+		if (newerCursor) {
+			queryFindEvents._id = { $gt: new ObjectId(newerCursor) };
+		}
+		const eventDocs: IDocument[] = await db.findArray('events', queryFindEvents, { limit: 10, isAscending: false });
+
+		res.json({
+			resultType: 'events',
+			result: {
+				collection: eventDocs.map(eventDoc => packEvent(eventDoc)),
+				newerCursor: (eventDocs.length > 0 ? eventDocs[0]._id.toHexString() : newerCursor) || null
+			}
+		});
+	});
 
 	return router;
 }
