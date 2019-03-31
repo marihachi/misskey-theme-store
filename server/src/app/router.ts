@@ -130,6 +130,8 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		});
 	});
 
+	//#region User API
+
 	// resolve username to userId
 	router.post('/user/resolve', async (req, res) => {
 
@@ -177,6 +179,10 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			result: await packUserWithThemes(userDoc, serverContext)
 		});
 	});
+
+	//#endregion User API
+
+	//#region Theme API
 
 	// register a theme from theme data
 	router.post('/theme/register', authenticate, async (req, res) => {
@@ -457,6 +463,8 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			result: { }
 		});
 	});
+
+	//#endregion Theme API
 
 	return router;
 }
