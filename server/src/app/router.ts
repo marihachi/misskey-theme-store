@@ -257,6 +257,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 			textColor: parsedThemeData.vars.text
 		});
 
+		await serverContext.db.create('events', {
+			type: 'add.theme',
+			content: { themeId: themeDoc._id }
+		});
+
 		res.json({
 			resultType: 'theme',
 			result: await packTheme(themeDoc, serverContext)
@@ -341,6 +346,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		const updatedDoc: IDocument = await db.updateById('themes', themeId, {
 			imageFileName: fileName,
+		});
+
+		await serverContext.db.create('events', {
+			type: 'update.theme',
+			content: { themeId: new ObjectId(themeId) }
 		});
 
 		res.json({
@@ -430,6 +440,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 
 		themeDoc = (await db.updateById('themes', themeId, updateQuery)) as IDocument;
 
+		await serverContext.db.create('events', {
+			type: 'update.theme',
+			content: { themeId: new ObjectId(themeId) }
+		});
+
 		res.json({
 			resultType: 'theme',
 			result: await packTheme(themeDoc, serverContext)
@@ -458,6 +473,11 @@ export default function mainRouter(serverContext: ServerContext): Router {
 		}
 
 		await db.updateById('themes', themeId, { state: 'deleted' });
+
+		await serverContext.db.create('events', {
+			type: 'delete.theme',
+			content: { themeId: new ObjectId(themeId) }
+		});
 
 		res.json({
 			resultType: 'empty',
