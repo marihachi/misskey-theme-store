@@ -37,10 +37,10 @@ export default async function observeEvent() {
 				throw new Error(res.error.reason);
 			}
 			newerCursor = res.result.newerCursor;
-			const partalEvents: Event[] = res.result.collection;
-			partalEvents.reverse();
-			events.push(...partalEvents);
-			if (partalEvents.length < 10) {
+			const partialEvents: Event[] = res.result.collection;
+			partialEvents.reverse();
+			events.push(...partialEvents);
+			if (partialEvents.length < 10) {
 				break;
 			}
 		}
