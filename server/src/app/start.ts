@@ -64,6 +64,7 @@ export default async function start() {
 	// * setup http server
 
 	const app = Express();
+	app.disable('x-powered-by');
 	app.set('views', path.resolve(__dirname, './views'));
 	app.set('view engine', 'pug');
 	app.use(bodyParser.json({ limit: '3MB' }));
