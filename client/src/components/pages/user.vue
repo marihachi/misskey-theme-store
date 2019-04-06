@@ -1,7 +1,7 @@
 <template>
 <div class="user-page">
 	<div v-if="user">
-		<p>@{{user.username}} さんのページ</p>
+		<p>{{user.username}} さんのページ</p>
 		<p>投稿されたテーマ:</p>
 		<ul v-if="user.themes.length != 0">
 			<li v-for="theme in user.themes" :key="theme.themeId">

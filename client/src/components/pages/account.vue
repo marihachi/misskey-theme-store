@@ -1,7 +1,7 @@
 <template>
 <div class="account-page" >
 	<div v-if="accountUser">
-		<p>@{{accountUser.username}}</p>
+		<p>{{accountUser.username}} さん</p>
 
 		<label for="theme-file" class="file-select button">
 			テーマをアップロード

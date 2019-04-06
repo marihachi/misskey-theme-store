@@ -9,6 +9,9 @@
 				<div class="desc">
 					<p>{{theme.description}}</p>
 				</div>
+				<div class="uploaded-by">
+					<p>By {{theme.user.username}}</p>
+				</div>
 				<div class="details-link">
 					<router-link :to="{ name: 'themeDetail', params: { themeId: theme.themeId } }" :style="{ color: theme.primaryColor }">
 						詳細ページへ
@@ -72,13 +75,22 @@ export default class extends Vue {
 				}
 
 				.desc {
+					margin-bottom: auto;
+
 					p {
 						font-size: 0.8rem;
 					}
 				}
 
+				.uploaded-by {
+					p {
+						font-size: 0.8rem;
+						margin-bottom: 0.8rem;
+					}
+				}
+
 				.details-link {
-					margin-top: auto;
+					
 				}
 			}
 		}

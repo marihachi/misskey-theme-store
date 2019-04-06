@@ -8,7 +8,7 @@
 			<div class="right">
 				<h1>{{theme.name}}</h1>
 				<p>{{theme.description}}</p>
-				<p>作者: <router-link :to="{ name: 'userDetail', params: { username: theme.user.username } }">@{{theme.user.username}}</router-link></p>
+				<p>作者: <router-link :to="{ name: 'userDetail', params: { username: theme.user.username } }">{{theme.user.username}}</router-link></p>
 				<a :href=themeUrl class="button">このテーマをダウンロード</a>
 				<div class="author-setting" v-if="isAuthor">
 					<h2>投稿したテーマの設定</h2>
