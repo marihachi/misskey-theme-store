@@ -66,7 +66,7 @@ export default async function start() {
 	const app = Express();
 	app.set('views', path.resolve(__dirname, './views'));
 	app.set('view engine', 'pug');
-	app.use(bodyParser.json());
+	app.use(bodyParser.json({ limit: '3MB' }));
 
 	// routings
 

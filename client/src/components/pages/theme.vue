@@ -41,6 +41,20 @@ type Theme = {
 	imageFileName: string
 };
 
+const readFileAsBase64 = (file: Blob) => new Promise<any>((resolve, reject) => {
+	const reader = new FileReader();
+	reader.onload = (e) => {
+		const result: string | ArrayBuffer | null = reader.result;
+		if (result == null) return reject('result is null');
+		if (result instanceof ArrayBuffer) return reject('result is not string');
+		resolve(result.split(',')[1]);
+	};
+	reader.onerror = (e) => {
+		reject(new Error('file read error'));
+	};
+	reader.readAsDataURL(file);
+});
+
 @Component({ components: { } })
 export default class extends Vue {
 	theme: Theme | null = null;
@@ -72,6 +86,34 @@ export default class extends Vue {
 			token: sessionModule.session.token,
 			themeId: this.$route.params.themeId
 		});
+	}
+
+	async onFileChanged(e: any) {
+		if (!sessionModule.session) {
+			return;
+		}
+
+		if (this.theme == null) {
+			return;
+		}
+
+		const file = e.target.files[0];
+		if (!file) {
+			return;
+		}
+		const image = await readFileAsBase64(file);
+
+		const res = await api('/theme/image/register', {
+			token: sessionModule.session.token,
+			themeId: this.theme.themeId,
+			imageData: image
+		});
+		if (res.error) {
+			console.error(res.error);
+			alert('スクリーンショットの登録に失敗しました');
+			return;
+		}
+		const theme: Theme = res.result;
 	}
 }
 </script>
