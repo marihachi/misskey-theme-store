@@ -32,6 +32,25 @@ export default function<T> (store: Store<T>) {
 		}
 
 		@Mutation
+		addThemeState(payload: { theme: Theme }) {
+			if (!payload.theme) {
+				throw new Error('invalid payload');
+			}
+			this.themes.splice(0, 0, payload.theme);
+		}
+
+		@Mutation
+		deleteThemeState(payload: { themeId: string }) {
+			if (!payload.themeId) {
+				throw new Error('invalid payload');
+			}
+			const index = this.themes.findIndex(i => i.themeId == payload.themeId);
+			if (index != -1) {
+				this.themes.splice(index, 1);
+			}
+		}
+
+		@Mutation
 		clearThemesState() {
 			this.themes = [];
 			this.themesFetched = false;
