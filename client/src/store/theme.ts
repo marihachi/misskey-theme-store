@@ -18,6 +18,7 @@ export default function<T> (store: Store<T>) {
 		themes: Theme[] = [];
 		themesFetched: boolean = false;
 
+		// themes
 		@Mutation
 		setThemesState(payload: { themes: Theme[] }) {
 			if (!payload.themes) {
@@ -27,16 +28,46 @@ export default function<T> (store: Store<T>) {
 		}
 
 		@Mutation
+		clearThemesState() {
+			this.themes = [];
+			this.themesFetched = false;
+		}
+
+		// themesFetched
+		@Mutation
 		setThemesFetchedState() {
 			this.themesFetched = true;
 		}
 
+		// theme
 		@Mutation
 		addThemeState(payload: { theme: Theme }) {
 			if (!payload.theme) {
 				throw new Error('invalid payload');
 			}
 			this.themes.splice(0, 0, payload.theme);
+		}
+
+		@Mutation
+		setThemeState(payload: { theme: Theme }) {
+			if (!payload.theme) {
+				throw new Error('invalid payload');
+			}
+			const index = this.themes.findIndex(i => i.themeId == payload.theme.themeId);
+			// if not exists
+			if (index == -1) {
+				this.addThemeState(payload);
+				return;
+			}
+			this.themes[index] = payload.theme;
+		}
+
+		@Mutation
+		findThemeState(payload: { themeId: string }) {
+			if (!payload.themeId) {
+				throw new Error('invalid payload');
+			}
+			return this.themes.find(i => i.themeId == payload.themeId);
 		}
 
 		@Mutation
@@ -48,12 +79,6 @@ export default function<T> (store: Store<T>) {
 			if (index != -1) {
 				this.themes.splice(index, 1);
 			}
-		}
-
-		@Mutation
-		clearThemesState() {
-			this.themes = [];
-			this.themesFetched = false;
 		}
 
 		@Action

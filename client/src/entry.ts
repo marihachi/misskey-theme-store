@@ -23,8 +23,8 @@ async function entry() {
 		faPalette,
 		faPaintBrush,
 		faSignInAlt,
-		faUserPlus,
-		faSignOutAlt
+		faSignOutAlt,
+		faUserPlus
 	);
 	Vue.component('fa', FontAwesomeIcon);
 
