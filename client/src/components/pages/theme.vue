@@ -3,7 +3,7 @@
 	<div v-if="theme != null">
 		<div class="container">
 			<div class="left">
-				<div class="theme-image"></div>
+				<img :src=themeImageUrl v-if="theme.imageFileName != null" />
 			</div>
 			<div class="right">
 				<h1>{{theme.name}}</h1>
@@ -75,6 +75,15 @@ export default class extends Vue {
 		}
 	}
 
+	get themeImageUrl() {
+		if (this.theme) {
+			return `/theme/image/${this.theme.imageFileName}`;
+		}
+		else {
+			return '';
+		}
+	}
+
 	async created() {
 		const res = await api('/theme/get', { themeId: this.$route.params.themeId });
 		this.theme = (res.result as Theme);
@@ -126,7 +135,9 @@ export default class extends Vue {
 		display: flex;
 
 		.left {
-
+			img {
+				max-width: 512px;
+			}
 		}
 
 		.right {
