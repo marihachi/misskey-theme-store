@@ -71,6 +71,17 @@ export default function<T> (store: Store<T>) {
 		}
 
 		@Mutation
+		replaceThemeState(payload: { themeId: string, theme: Theme }) {
+			if (!payload.themeId) {
+				throw new Error('invalid payload');
+			}
+			const index = this.themes.findIndex(i => i.themeId == payload.themeId);
+			if (index != -1) {
+				this.themes.splice(index, 1, payload.theme);
+			}
+		}
+
+		@Mutation
 		deleteThemeState(payload: { themeId: string }) {
 			if (!payload.themeId) {
 				throw new Error('invalid payload');

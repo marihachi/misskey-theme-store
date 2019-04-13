@@ -69,7 +69,13 @@ export default async function observeEvent() {
 				}
 			}
 			else if (isThemeUpdatedEvent(event)) {
-				console.log('theme updated:', event.themeId);
+				const res = await api('/theme/get', {
+					themeId: event.themeId
+				});
+				if (res.result) {
+					console.log('theme updated:', res.result);
+					themeModule.replaceThemeState({ themeId: event.themeId, theme: res.result });
+				}
 			}
 			else if (isThemeDeletedEvent(event)) {
 				console.log('theme deleted:', event.themeId);

@@ -30,7 +30,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import api from '../../utils/requestApi';
-import { sessionModule } from '../../store';
+import { sessionModule, themeModule } from '../../store';
 
 type Theme = {
 	themeId: string,
@@ -57,7 +57,10 @@ const readFileAsBase64 = (file: Blob) => new Promise<any>((resolve, reject) => {
 
 @Component({ components: { } })
 export default class extends Vue {
-	theme: Theme | null = null;
+
+	get theme(): Theme | undefined {
+		return themeModule.themes.find(i => i.themeId == this.$route.params.themeId);
+	}
 
 	get isAuthor() {
 		if (!sessionModule.session || !this.theme) {
@@ -85,8 +88,6 @@ export default class extends Vue {
 	}
 
 	async created() {
-		const res = await api('/theme/get', { themeId: this.$route.params.themeId });
-		this.theme = (res.result as Theme);
 	}
 
 	async deleteTheme() {
